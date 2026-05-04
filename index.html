@@ -8,243 +8,163 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root {
-  --dark:       #0f1e15;
-  --dark2:      #1a2e22;
-  --dark3:      #243d2d;
-  --gold:       #b8922a;
-  --gold-l:     #d4a843;
-  --gold-p:     #f0d98a;
+  /* ── Light palette ───────────────────────────────── */
+  --bg:         #f4f6f3;
+  --bg2:        #eef1ec;
+  --bg3:        #ffffff;
+  --topbar-bg:  #1e3a28;
+  --nav-bg:     #f9faf8;
+  --gold:       #9b7820;
+  --gold-l:     #c09a28;
+  --gold-p:     #7a5c10;
+  --gold-bg:    #fdf6e3;
+  --green-d:    #1e3a28;
   --green-m:    #2e5c3a;
-  --green-l:    #3d7a4d;
+  --green-l:    #4a8a5c;
   --green-a:    #27ae60;
-  --cream:      #f5f0e8;
-  --text-c:     #f0e8d0;
-  --text-m:     #8aab91;
+  --green-bg:   #eaf5ee;
+  --text-h:     #1a2e1e;
+  --text-b:     #374a3a;
+  --text-m:     #6b8570;
+  --text-s:     #9ab09e;
   --red-a:      #c0392b;
-  --blue-a:     #2980b9;
-  --border:     rgba(184,146,42,0.25);
-  --card-bg:    rgba(26,46,34,0.9);
-  --shadow:     0 8px 32px rgba(0,0,0,0.4);
+  --blue-a:     #2471a3;
+  --blue-bg:    #ebf5fb;
+  --border:     rgba(46,92,58,0.15);
+  --border-g:   rgba(155,120,32,0.3);
+  --shadow-s:   0 2px 8px rgba(30,58,40,0.08);
+  --shadow-m:   0 4px 20px rgba(30,58,40,0.12);
+  --shadow-l:   0 8px 32px rgba(30,58,40,0.16);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text-c);overflow-x:hidden;}
+body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text-b);overflow-x:hidden;}
 ::-webkit-scrollbar{width:6px;}
-::-webkit-scrollbar-track{background:var(--dark2);}
-::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--gold-l);border-radius:3px;}
 
-/* ─── LOGIN PAGE ─────────────────────────────────────────────────────────── */
+/* ══════════════════ LOGIN ══════════════════ */
 #login-page {
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  position:relative;
-  overflow:hidden;
-  background: radial-gradient(ellipse at 30% 50%, #1a3525 0%, #0f1e15 60%);
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  background: linear-gradient(135deg,#e8f0e8 0%,#d4e4d0 50%,#c8dcc4 100%);
 }
 .login-bg-pattern {
-  position:absolute;inset:0;
+  position:absolute;inset:0;pointer-events:none;
   background-image:
-    repeating-linear-gradient(45deg, rgba(184,146,42,0.03) 0px, rgba(184,146,42,0.03) 1px, transparent 1px, transparent 60px),
-    repeating-linear-gradient(-45deg, rgba(184,146,42,0.03) 0px, rgba(184,146,42,0.03) 1px, transparent 1px, transparent 60px);
-  pointer-events:none;
+    repeating-linear-gradient(45deg,rgba(46,92,58,.04) 0,rgba(46,92,58,.04) 1px,transparent 1px,transparent 50px),
+    repeating-linear-gradient(-45deg,rgba(46,92,58,.04) 0,rgba(46,92,58,.04) 1px,transparent 1px,transparent 50px);
 }
 .login-glow {
-  position:absolute;
-  width:600px;height:600px;
-  background:radial-gradient(circle, rgba(184,146,42,0.08) 0%, transparent 70%);
+  position:absolute;width:500px;height:500px;pointer-events:none;
+  background:radial-gradient(circle,rgba(155,120,32,.12) 0%,transparent 70%);
   top:50%;left:50%;transform:translate(-50%,-50%);
-  pointer-events:none;
 }
 .login-card {
-  background:rgba(26,46,34,0.85);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:48px 52px;
-  width:440px;
-  backdrop-filter:blur(20px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(184,146,42,0.2);
-  position:relative;
-  animation:slideUp .6s ease;
+  background:#fff;border:1px solid rgba(46,92,58,.18);border-radius:20px;
+  padding:48px 52px;width:440px;
+  box-shadow:0 20px 60px rgba(30,58,40,.18),0 1px 0 rgba(255,255,255,.9) inset;
+  position:relative;animation:slideUp .6s ease;
 }
 @keyframes slideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
-.login-logo {
-  text-align:center;
-  margin-bottom:32px;
-}
+.login-logo{text-align:center;margin-bottom:28px;}
 .login-logo-icon {
   width:70px;height:70px;
-  background:linear-gradient(135deg,var(--gold),var(--gold-l));
-  border-radius:50%;
-  display:inline-flex;align-items:center;justify-content:center;
-  font-size:28px;
-  margin-bottom:14px;
-  box-shadow:0 0 30px rgba(184,146,42,0.4);
+  background:linear-gradient(135deg,var(--green-d),var(--green-m));
+  border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  font-size:28px;margin-bottom:14px;box-shadow:0 6px 24px rgba(30,58,40,.3);
 }
-.login-logo h1 {
-  font-size:17px;font-weight:700;color:var(--gold-p);
-  line-height:1.4;
-}
-.login-logo p {font-size:12px;color:var(--text-m);margin-top:4px;}
-.login-divider {
-  height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  margin:24px 0;
-}
-.login-field {margin-bottom:18px;}
-.login-field label {display:block;font-size:12px;color:var(--text-m);margin-bottom:7px;font-weight:600;letter-spacing:.5px;}
+.login-logo h1{font-size:16px;font-weight:700;color:var(--green-d);line-height:1.5;}
+.login-logo p{font-size:12px;color:var(--text-m);margin-top:4px;}
+.login-divider{height:1px;background:linear-gradient(90deg,transparent,var(--green-l),transparent);margin:22px 0;}
+.login-field{margin-bottom:18px;}
+.login-field label{display:block;font-size:12px;color:var(--text-m);margin-bottom:7px;font-weight:600;}
 .login-field input {
-  width:100%;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(184,146,42,0.3);
-  border-radius:10px;
-  padding:12px 16px;
-  color:var(--text-c);
-  font-size:14px;
-  font-family:'Cairo',sans-serif;
-  outline:none;
-  transition:border-color .2s,box-shadow .2s;
+  width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;
+  padding:12px 16px;color:var(--text-b);font-size:14px;font-family:'Cairo',sans-serif;
+  outline:none;transition:border-color .2s,box-shadow .2s;
 }
-.login-field input:focus {
-  border-color:var(--gold-l);
-  box-shadow:0 0 0 3px rgba(184,146,42,0.15);
-}
-.login-field input::placeholder{color:rgba(138,171,145,0.5);}
+.login-field input:focus{border-color:var(--green-l);box-shadow:0 0 0 3px rgba(74,138,92,.15);}
+.login-field input::placeholder{color:var(--text-s);}
 .login-btn {
-  width:100%;
-  background:linear-gradient(135deg,var(--gold),var(--gold-l));
-  color:var(--dark);
-  border:none;
-  border-radius:10px;
-  padding:14px;
-  font-size:15px;
-  font-weight:700;
-  font-family:'Cairo',sans-serif;
-  cursor:pointer;
-  margin-top:8px;
-  transition:all .2s;
-  letter-spacing:.5px;
+  width:100%;background:linear-gradient(135deg,var(--green-d),var(--green-m));
+  color:#fff;border:none;border-radius:10px;padding:14px;
+  font-size:15px;font-weight:700;font-family:'Cairo',sans-serif;
+  cursor:pointer;margin-top:8px;transition:all .2s;letter-spacing:.3px;
 }
-.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(184,146,42,0.4);}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(30,58,40,.35);}
 .login-btn:active{transform:translateY(0);}
 .login-error {
-  background:rgba(192,57,43,0.15);
-  border:1px solid rgba(192,57,43,0.4);
-  color:#f08080;
-  border-radius:8px;
-  padding:10px 14px;
-  font-size:12px;
-  margin-top:14px;
-  display:none;
-  text-align:center;
+  background:#fdf0ee;border:1px solid rgba(192,57,43,.3);color:var(--red-a);
+  border-radius:8px;padding:10px 14px;font-size:12px;margin-top:14px;display:none;text-align:center;
 }
-.login-hint {
-  text-align:center;
-  font-size:11px;
-  color:rgba(138,171,145,0.6);
-  margin-top:20px;
-  line-height:1.8;
-}
-.login-hint strong{color:var(--gold-p);}
 
-/* ─── MAIN APP ───────────────────────────────────────────────────────────── */
-#app {display:none;min-height:100vh;flex-direction:column;}
+/* ══════════════════ APP SHELL ══════════════════ */
+#app{display:none;min-height:100vh;flex-direction:column;}
 #app.visible{display:flex;}
 
-/* ─── TOPBAR ─────────────────────────────────────────────────────────────── */
-.topbar {
-  background:linear-gradient(135deg,#0a1510 0%,var(--dark2) 100%);
-  border-bottom:1px solid var(--border);
-  padding:0 28px;
-  height:64px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:100;
-  box-shadow:0 2px 20px rgba(0,0,0,0.3);
+/* ── Topbar ── */
+.topbar{
+  background:var(--topbar-bg);border-bottom:1px solid rgba(255,255,255,.08);
+  padding:0 28px;height:62px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.25);
 }
-.topbar-brand {display:flex;align-items:center;gap:12px;}
-.topbar-icon {
-  width:38px;height:38px;
-  background:linear-gradient(135deg,var(--gold),var(--gold-l));
-  border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;
-  box-shadow:0 0 15px rgba(184,146,42,0.3);
+.topbar-brand{display:flex;align-items:center;gap:12px;}
+.topbar-icon{
+  width:36px;height:36px;background:linear-gradient(135deg,var(--gold-l),#e8b832);
+  border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:15px;box-shadow:0 0 12px rgba(192,154,40,.4);
 }
-.topbar-title {font-size:14px;font-weight:700;color:var(--gold-p);}
-.topbar-sub {font-size:10px;color:var(--text-m);}
-.topbar-right {display:flex;align-items:center;gap:12px;}
-.user-badge {
-  display:flex;align-items:center;gap:8px;
-  background:rgba(184,146,42,0.1);
-  border:1px solid var(--border);
-  border-radius:20px;
-  padding:5px 14px 5px 8px;
-  font-size:12px;color:var(--gold-p);
+.topbar-title{font-size:13px;font-weight:700;color:#f0ead8;}
+.topbar-sub{font-size:10px;color:rgba(255,255,255,.45);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.user-badge{
+  display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);border-radius:20px;
+  padding:5px 14px 5px 8px;font-size:12px;color:#f0ead8;
 }
-.user-avatar {
-  width:26px;height:26px;
-  background:var(--gold);
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;color:var(--dark);
+.user-avatar{
+  width:26px;height:26px;background:linear-gradient(135deg,var(--gold-l),#e8b832);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--green-d);
 }
-.logout-btn {
-  background:rgba(192,57,43,0.15);
-  border:1px solid rgba(192,57,43,0.3);
-  color:#f08080;
-  padding:6px 14px;
-  border-radius:8px;
-  font-size:12px;
-  cursor:pointer;
-  font-family:'Cairo',sans-serif;
-  transition:all .2s;
+.logout-btn{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+  color:rgba(255,255,255,.7);padding:6px 14px;border-radius:8px;font-size:12px;
+  cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s;
 }
-.logout-btn:hover{background:rgba(192,57,43,0.25);}
+.logout-btn:hover{background:rgba(192,57,43,.25);color:#f08080;border-color:rgba(192,57,43,.4);}
 
-/* ─── NAV ────────────────────────────────────────────────────────────────── */
-.nav {
-  background:#0d1a11;
-  border-bottom:1px solid rgba(184,146,42,0.15);
-  padding:0 28px;
-  display:flex;gap:2px;
-  overflow-x:auto;
+/* ── Nav ── */
+.nav{
+  background:var(--nav-bg);border-bottom:2px solid var(--border);
+  padding:0 28px;display:flex;gap:0;overflow-x:auto;
 }
-.nav-btn {
-  color:var(--text-m);
-  padding:13px 18px;
-  font-size:13px;
-  cursor:pointer;
-  border:none;background:none;
-  font-family:'Cairo',sans-serif;
-  border-bottom:2px solid transparent;
-  transition:all .2s;
-  white-space:nowrap;
-  position:relative;
+.nav-btn{
+  color:var(--text-m);padding:14px 18px;font-size:13px;cursor:pointer;
+  border:none;background:none;font-family:'Cairo',sans-serif;
+  border-bottom:3px solid transparent;transition:all .2s;
+  white-space:nowrap;position:relative;font-weight:500;
 }
-.nav-btn.active{color:var(--gold-l);border-bottom-color:var(--gold);}
-.nav-btn:hover:not(.active){color:var(--text-c);}
-.nav-btn .admin-badge {
-  position:absolute;top:8px;right:8px;
-  width:6px;height:6px;
-  background:var(--gold);
-  border-radius:50%;
+.nav-btn.active{color:var(--green-d);border-bottom-color:var(--green-m);font-weight:700;}
+.nav-btn:hover:not(.active){color:var(--text-b);background:var(--bg2);}
+.nav-btn .admin-dot{
+  position:absolute;top:9px;right:6px;width:6px;height:6px;
+  background:var(--gold-l);border-radius:50%;
 }
 
-/* ─── CONTENT ────────────────────────────────────────────────────────────── */
-.content{flex:1;padding:24px 28px;}
+/* ── Content ── */
+.content{flex:1;padding:24px 28px;background:var(--bg);}
 .tab-pane{display:none;animation:fadeIn .3s ease;}
 .tab-pane.active{display:block;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
 
-/* ─── CARDS ──────────────────────────────────────────────────────────────── */
-.card {
-  background:var(--dark3);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:18px;
+/* ── Cards ── */
+.card{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:12px;padding:18px;box-shadow:var(--shadow-s);
 }
-.card-title {
-  color:var(--gold-l);font-size:12px;font-weight:700;
+.card-title{
+  color:var(--green-d);font-size:12px;font-weight:700;
   margin-bottom:14px;text-transform:uppercase;letter-spacing:.8px;
   display:flex;align-items:center;gap:8px;
 }
@@ -252,271 +172,235 @@ body{font-family:'Cairo',sans-serif;background:var(--dark);color:var(--text-c);o
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
 
-.kpi-card {
-  background:var(--dark3);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:18px;
-  position:relative;
-  overflow:hidden;
-  transition:transform .2s,box-shadow .2s;
+/* ── KPI cards ── */
+.kpi-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:12px;
+  padding:18px;position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;box-shadow:var(--shadow-s);
 }
-.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.3);}
-.kpi-card::before {
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-m);}
+.kpi-card::before{
   content:'';position:absolute;top:0;right:0;
-  width:3px;height:100%;
-  background:var(--gold);
+  width:4px;height:100%;background:var(--green-m);
 }
-.kpi-label{font-size:11px;color:var(--text-m);margin-bottom:6px;}
-.kpi-val{font-size:28px;font-weight:900;color:var(--text-c);line-height:1;}
-.kpi-sub{font-size:11px;color:var(--gold-p);margin-top:5px;}
+.kpi-label{font-size:11px;color:var(--text-m);margin-bottom:6px;font-weight:500;}
+.kpi-val{font-size:30px;font-weight:900;color:var(--text-h);line-height:1;}
+.kpi-sub{font-size:11px;color:var(--green-l);margin-top:5px;}
 
-/* ─── TABLE ──────────────────────────────────────────────────────────────── */
+/* ── Table ── */
 .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);}
 table{width:100%;border-collapse:collapse;}
 thead th{
-  background:var(--dark2);
-  color:var(--gold-p);
-  font-size:12px;font-weight:700;
-  padding:12px 14px;
-  text-align:right;
-  white-space:nowrap;
-  letter-spacing:.4px;
+  background:var(--bg2);color:var(--green-d);font-size:12px;font-weight:700;
+  padding:12px 14px;text-align:right;white-space:nowrap;letter-spacing:.3px;
 }
-tbody tr{border-bottom:1px solid rgba(184,146,42,0.08);transition:background .15s;}
-tbody tr:hover{background:rgba(184,146,42,0.06);}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s;}
+tbody tr:hover{background:var(--green-bg);}
 tbody tr:last-child{border-bottom:none;}
-td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
+td{padding:10px 14px;font-size:12px;color:var(--text-b);text-align:right;}
 
-/* ─── BADGES ─────────────────────────────────────────────────────────────── */
+/* ── Badges ── */
 .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
-.badge-green{background:rgba(39,174,96,.2);color:#4ec99a;border:1px solid rgba(39,174,96,.3);}
-.badge-gold{background:rgba(184,146,42,.2);color:var(--gold-p);border:1px solid rgba(184,146,42,.3);}
-.badge-red{background:rgba(192,57,43,.2);color:#f08080;border:1px solid rgba(192,57,43,.3);}
-.badge-blue{background:rgba(41,128,185,.2);color:#7ec8e3;border:1px solid rgba(41,128,185,.3);}
+.badge-green{background:rgba(39,174,96,.12);color:#1e7e44;border:1px solid rgba(39,174,96,.3);}
+.badge-gold{background:var(--gold-bg);color:var(--gold-p);border:1px solid rgba(155,120,32,.3);}
+.badge-red{background:#fdf0ee;color:#a93226;border:1px solid rgba(192,57,43,.25);}
+.badge-blue{background:var(--blue-bg);color:#1a5276;border:1px solid rgba(36,113,163,.25);}
+.badge-purple{background:#f5eef8;color:#6c3483;border:1px solid rgba(108,52,131,.25);}
 
-/* ─── PROGRESS BAR ───────────────────────────────────────────────────────── */
+/* ── Progress bars ── */
 .prog-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.prog-label{font-size:12px;color:var(--text-c);width:140px;flex-shrink:0;text-align:right;}
-.prog-track{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+.prog-label{font-size:12px;color:var(--text-b);width:150px;flex-shrink:0;text-align:right;}
+.prog-track{flex:1;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden;}
 .prog-fill{height:100%;border-radius:4px;transition:width 1.2s ease;}
 .prog-pct{font-size:11px;color:var(--text-m);width:38px;flex-shrink:0;}
 
-/* ─── ADMIN PANEL ────────────────────────────────────────────────────────── */
-.admin-panel {
-  background:var(--dark3);
-  border:1px solid rgba(184,146,42,0.4);
-  border-radius:14px;
-  padding:0;
-  overflow:hidden;
+/* ── Admin panel ── */
+.admin-panel{
+  background:var(--bg3);border:1.5px solid var(--border-g);
+  border-radius:14px;padding:0;overflow:hidden;box-shadow:var(--shadow-s);
 }
-.admin-header {
-  background:linear-gradient(135deg,var(--dark2),var(--dark3));
-  border-bottom:1px solid var(--border);
-  padding:16px 20px;
+.admin-header{
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border-bottom:1px solid var(--border);padding:16px 20px;
   display:flex;align-items:center;justify-content:space-between;
 }
-.admin-header-title{font-size:14px;font-weight:700;color:var(--gold-p);}
-.admin-search {
-  display:flex;gap:10px;align-items:center;padding:14px 20px;
-  border-bottom:1px solid rgba(184,146,42,0.1);
-  background:rgba(0,0,0,0.15);
+.admin-header-title{font-size:14px;font-weight:700;color:var(--green-d);}
+.admin-search{
+  display:flex;gap:10px;align-items:center;padding:12px 20px;
+  border-bottom:1px solid var(--border);background:var(--bg);
 }
-.admin-search input {
-  flex:1;
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:8px 12px;
-  color:var(--text-c);
-  font-size:13px;
-  font-family:'Cairo',sans-serif;
-  outline:none;
+.admin-search input,.admin-search select{
+  background:var(--bg3);border:1.5px solid var(--border);border-radius:8px;
+  padding:8px 12px;color:var(--text-b);font-size:13px;
+  font-family:'Cairo',sans-serif;outline:none;transition:border-color .2s;
 }
-.admin-search input:focus{border-color:var(--gold-l);}
-.admin-search select {
-  background:rgba(255,255,255,.05);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:8px 12px;
-  color:var(--text-c);
-  font-size:12px;
-  font-family:'Cairo',sans-serif;
-  outline:none;
-  cursor:pointer;
-}
+.admin-search input{flex:1;}
+.admin-search input:focus,.admin-search select:focus{border-color:var(--green-l);}
 .admin-table-wrap{max-height:480px;overflow-y:auto;}
 
-.status-select {
-  background:rgba(255,255,255,.08);
-  border:1px solid var(--border);
-  border-radius:6px;
-  padding:4px 8px;
-  color:var(--text-c);
-  font-size:11px;
-  font-family:'Cairo',sans-serif;
-  cursor:pointer;
-  outline:none;
-  transition:border-color .2s;
+.status-select{
+  background:var(--bg2);border:1.5px solid var(--border);border-radius:6px;
+  padding:4px 8px;color:var(--text-b);font-size:11px;
+  font-family:'Cairo',sans-serif;cursor:pointer;outline:none;transition:border-color .2s;
 }
-.status-select:focus{border-color:var(--gold-l);}
+.status-select:focus{border-color:var(--green-l);}
 
-.action-btn {
-  background:transparent;
-  border:1px solid var(--border);
-  border-radius:6px;
-  padding:4px 10px;
-  color:var(--text-m);
-  font-size:11px;
-  cursor:pointer;
-  font-family:'Cairo',sans-serif;
-  transition:all .2s;
+.action-btn{
+  background:transparent;border:1.5px solid var(--border);border-radius:6px;
+  padding:4px 10px;color:var(--text-m);font-size:11px;cursor:pointer;
+  font-family:'Cairo',sans-serif;transition:all .2s;
 }
-.action-btn:hover{background:rgba(184,146,42,.15);color:var(--gold-l);border-color:var(--gold-l);}
-.action-btn.del:hover{background:rgba(192,57,43,.15);color:#f08080;border-color:rgba(192,57,43,.4);}
+.action-btn:hover{background:var(--green-bg);color:var(--green-d);border-color:var(--green-l);}
+.action-btn.del:hover{background:#fdf0ee;color:#a93226;border-color:rgba(192,57,43,.4);}
+.action-btn.edit-btn:hover{background:var(--gold-bg);color:var(--gold-p);border-color:var(--border-g);}
 
-.save-indicator {
-  position:fixed;bottom:24px;left:24px;
-  background:var(--green-a);
-  color:white;
-  padding:10px 20px;
-  border-radius:8px;
-  font-size:13px;
-  font-weight:600;
-  box-shadow:0 4px 16px rgba(0,0,0,0.3);
-  opacity:0;pointer-events:none;
-  transition:opacity .3s;
-  z-index:999;
+/* ── Save indicator ── */
+.save-indicator{
+  position:fixed;bottom:24px;left:24px;background:var(--green-a);color:#fff;
+  padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;
+  box-shadow:var(--shadow-m);opacity:0;pointer-events:none;transition:opacity .3s;z-index:999;
 }
 .save-indicator.show{opacity:1;}
 
-/* ─── TIMELINE ───────────────────────────────────────────────────────────── */
-.tl{position:relative;padding-right:24px;}
-.tl::before{content:'';position:absolute;right:9px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold),transparent);}
-.tl-item{position:relative;margin-bottom:20px;padding-right:24px;}
-.tl-dot{position:absolute;right:0;top:5px;width:18px;height:18px;border-radius:50%;border:2px solid var(--gold);background:var(--dark2);z-index:1;}
-.tl-dot.done{background:var(--gold);}
-.tl-dot.pending{background:var(--dark2);border-color:var(--text-m);}
+/* ── Timeline ── */
+.tl{position:relative;padding-right:26px;}
+.tl::before{
+  content:'';position:absolute;right:10px;top:6px;bottom:6px;
+  width:2px;background:linear-gradient(180deg,var(--green-m),var(--border));
+}
+.tl-item{position:relative;margin-bottom:22px;padding-right:26px;}
+.tl-dot{
+  position:absolute;right:0;top:5px;width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--green-m);background:var(--bg3);z-index:1;
+}
+.tl-dot.done{background:var(--green-m);}
+.tl-dot.pending{background:var(--bg3);border-color:var(--text-s);}
 .tl-date{color:var(--gold-p);font-size:11px;font-weight:700;}
-.tl-title{color:var(--text-c);font-size:13px;font-weight:600;margin-top:2px;}
+.tl-title{color:var(--text-h);font-size:13px;font-weight:700;margin-top:2px;}
 .tl-desc{color:var(--text-m);font-size:11px;margin-top:3px;line-height:1.6;}
+.tl-actions{display:flex;gap:6px;margin-top:6px;}
 
-/* ─── SECTION HEADER ─────────────────────────────────────────────────────── */
-.section-head {
-  font-size:15px;font-weight:700;color:var(--gold-p);
-  margin-bottom:16px;
-  padding-bottom:10px;
-  border-bottom:1px solid var(--border);
+/* ── Section header ── */
+.section-head{
+  font-size:15px;font-weight:700;color:var(--green-d);margin-bottom:16px;
+  padding-bottom:10px;border-bottom:2px solid var(--border);
   display:flex;align-items:center;gap:10px;
 }
 .section-head span{font-size:11px;color:var(--text-m);font-weight:400;}
 
-/* ─── MODAL ──────────────────────────────────────────────────────────────── */
-.modal-overlay {
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.75);
-  backdrop-filter:blur(4px);
-  z-index:500;
-  display:flex;align-items:center;justify-content:center;
+/* ── Modals ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(30,58,40,.5);backdrop-filter:blur(4px);
+  z-index:500;display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity .2s;
 }
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal {
-  background:var(--dark3);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:28px;
-  width:420px;
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
-  animation:modalIn .25s ease;
+.modal{
+  background:var(--bg3);border:1px solid var(--border);border-radius:16px;
+  padding:28px;width:500px;box-shadow:var(--shadow-l);animation:modalIn .25s ease;
+  max-height:90vh;overflow-y:auto;
 }
-@keyframes modalIn{from{transform:scale(.95);}to{transform:scale(1);}}
-.modal h3{font-size:16px;font-weight:700;color:var(--gold-p);margin-bottom:8px;}
+@keyframes modalIn{from{transform:scale(.96);}to{transform:scale(1);}}
+.modal h3{font-size:16px;font-weight:700;color:var(--green-d);margin-bottom:6px;}
 .modal p{font-size:13px;color:var(--text-m);margin-bottom:20px;line-height:1.6;}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;}
-.btn-cancel {
-  background:transparent;border:1px solid var(--border);
-  color:var(--text-m);padding:9px 20px;border-radius:8px;
-  font-size:13px;cursor:pointer;font-family:'Cairo',sans-serif;
-  transition:all .2s;
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.btn-cancel{
+  background:var(--bg2);border:1.5px solid var(--border);color:var(--text-m);
+  padding:9px 20px;border-radius:8px;font-size:13px;cursor:pointer;
+  font-family:'Cairo',sans-serif;transition:all .2s;
 }
-.btn-cancel:hover{background:rgba(255,255,255,.05);}
-.btn-delete {
-  background:rgba(192,57,43,.2);border:1px solid rgba(192,57,43,.4);
-  color:#f08080;padding:9px 20px;border-radius:8px;
-  font-size:13px;font-weight:600;cursor:pointer;font-family:'Cairo',sans-serif;
-  transition:all .2s;
+.btn-cancel:hover{background:var(--bg);}
+.btn-delete{
+  background:#fdf0ee;border:1.5px solid rgba(192,57,43,.35);color:#a93226;
+  padding:9px 20px;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s;
 }
-.btn-delete:hover{background:rgba(192,57,43,.35);}
+.btn-delete:hover{background:#fce4e0;}
+.btn-save{
+  background:var(--green-m);border:none;color:#fff;
+  padding:9px 22px;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s;
+}
+.btn-save:hover{background:var(--green-d);}
 
-/* ─── CHART WRAPPER ──────────────────────────────────────────────────────── */
+/* ── Form fields ── */
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:12px;color:var(--text-m);margin-bottom:6px;font-weight:600;}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;
+  padding:10px 14px;color:var(--text-b);font-size:13px;
+  font-family:'Cairo',sans-serif;outline:none;transition:border-color .2s;
+}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--green-l);}
+.form-group textarea{resize:vertical;min-height:72px;line-height:1.6;}
+
+/* ── Chart wrapper ── */
 .chart-wrap{position:relative;height:240px;}
 
-/* ─── ADD ROW BTN ────────────────────────────────────────────────────────── */
-.add-row-btn {
-  background:rgba(39,174,96,.1);
-  border:1px dashed rgba(39,174,96,.4);
-  color:#4ec99a;
-  padding:9px 18px;
-  border-radius:8px;
-  font-size:12px;font-weight:600;
-  cursor:pointer;
-  font-family:'Cairo',sans-serif;
-  transition:all .2s;
+/* ── Add btn ── */
+.add-row-btn{
+  background:var(--green-bg);border:1.5px dashed var(--green-l);color:var(--green-d);
+  padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;
+  cursor:pointer;font-family:'Cairo',sans-serif;transition:all .2s;
 }
-.add-row-btn:hover{background:rgba(39,174,96,.2);}
+.add-row-btn:hover{background:rgba(74,138,92,.2);}
+.add-row-btn.blue{background:var(--blue-bg);border-color:var(--blue-a);color:var(--blue-a);}
+.add-row-btn.blue:hover{background:rgba(36,113,163,.15);}
+.add-row-btn.gold{background:var(--gold-bg);border-color:var(--gold-l);color:var(--gold-p);}
+.add-row-btn.gold:hover{background:rgba(155,120,32,.15);}
 
-/* ─── PAGES TAB ──────────────────────────────────────────────────────────── */
-.page-card {
-  background:var(--dark3);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:16px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:10px;
-  transition:border-color .2s;
+/* ── Page cards ── */
+.page-card{
+  background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;
+  padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;transition:border-color .2s,box-shadow .2s;
+  box-shadow:var(--shadow-s);
 }
-.page-card:hover{border-color:var(--gold-l);}
-.page-card-info {display:flex;align-items:center;gap:14px;}
-.page-icon {
-  width:40px;height:40px;
-  background:rgba(184,146,42,.15);
-  border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:18px;
+.page-card:hover{border-color:var(--green-l);box-shadow:var(--shadow-m);}
+.page-card-info{display:flex;align-items:center;gap:14px;}
+.page-icon{
+  width:40px;height:40px;background:var(--green-bg);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
 }
-.page-name{font-size:14px;font-weight:600;color:var(--text-c);}
+.page-name{font-size:14px;font-weight:600;color:var(--text-h);}
 .page-desc{font-size:11px;color:var(--text-m);margin-top:2px;}
 .page-actions{display:flex;gap:8px;align-items:center;}
-.page-toggle {
-  position:relative;
-  width:44px;height:24px;
-}
+.page-toggle{position:relative;width:44px;height:24px;}
 .page-toggle input{opacity:0;width:0;height:0;}
-.page-toggle-slider {
-  position:absolute;inset:0;
-  background:rgba(255,255,255,.1);
-  border-radius:24px;cursor:pointer;
-  transition:background .2s;
-  border:1px solid var(--border);
+.page-toggle-slider{
+  position:absolute;inset:0;background:var(--bg2);border-radius:24px;
+  cursor:pointer;transition:background .2s;border:1.5px solid var(--border);
 }
-.page-toggle-slider::before {
-  content:'';
-  position:absolute;
-  width:18px;height:18px;
+.page-toggle-slider::before{
+  content:'';position:absolute;width:18px;height:18px;
   right:3px;top:50%;transform:translateY(-50%);
-  background:var(--text-m);
-  border-radius:50%;
-  transition:all .2s;
+  background:var(--text-s);border-radius:50%;transition:all .2s;
 }
-.page-toggle input:checked + .page-toggle-slider{background:rgba(39,174,96,.25);border-color:rgba(39,174,96,.4);}
-.page-toggle input:checked + .page-toggle-slider::before{right:23px;background:var(--green-a);}
+.page-toggle input:checked+.page-toggle-slider{background:var(--green-bg);border-color:var(--green-l);}
+.page-toggle input:checked+.page-toggle-slider::before{right:23px;background:var(--green-a);}
 
+/* ── Update card ── */
+.update-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:12px;
+  padding:16px 18px;margin-bottom:10px;position:relative;
+  border-right:4px solid var(--gold-l);box-shadow:var(--shadow-s);
+  transition:box-shadow .2s;
+}
+.update-card:hover{box-shadow:var(--shadow-m);}
+.update-card-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.update-num{
+  width:28px;height:28px;background:var(--gold-bg);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;color:var(--gold-p);flex-shrink:0;
+}
+.update-title{font-size:13px;font-weight:700;color:var(--text-h);}
+.update-body{font-size:12px;color:var(--text-m);line-height:1.7;}
+.update-actions{display:flex;gap:6px;margin-top:10px;}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════ LOGIN PAGE ══════════════════ -->
+<!-- ══════════════════ LOGIN ══════════════════ -->
 <div id="login-page">
   <div class="login-bg-pattern"></div>
   <div class="login-glow"></div>
@@ -537,99 +421,87 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
     </div>
     <button class="login-btn" onclick="doLogin()">دخول إلى المنصة</button>
     <div class="login-error" id="login-error">❌ اسم المستخدم أو كلمة المرور غير صحيحة</div>
-
   </div>
 </div>
 
-<!-- ══════════════════ MAIN APP ══════════════════ -->
+<!-- ══════════════════ APP ══════════════════ -->
 <div id="app">
-  <!-- Topbar -->
   <div class="topbar">
     <div class="topbar-brand">
       <div class="topbar-icon">🏛</div>
       <div>
         <div class="topbar-title">البرنامج الوطني للذكرى العاشرة — رؤية 2030</div>
-        <div class="topbar-sub"> مكتب الإدارة الاستراتيجية </div>
+        <div class="topbar-sub">مكتب الإدارة الاستراتيجية | اجتماع اللجنة التنفيذية (26) — أبريل 2026</div>
       </div>
     </div>
     <div class="topbar-right">
       <div class="user-badge">
         <div class="user-avatar" id="user-avatar">A</div>
         <span id="user-name">مدير النظام</span>
-        <span id="user-role-badge" style="color:var(--gold);font-size:10px;">أدمن</span>
+        <span id="user-role-badge" style="color:#f0d890;font-size:10px;">أدمن</span>
       </div>
       <button class="logout-btn" onclick="doLogout()">خروج</button>
     </div>
   </div>
 
-  <!-- Nav -->
   <div class="nav" id="main-nav">
     <button class="nav-btn active" onclick="showTab('overview',this)">نظرة عامة</button>
     <button class="nav-btn" id="nav-plans" onclick="showTab('plans',this)">الخطط المستلمة</button>
     <button class="nav-btn" id="nav-comms" onclick="showTab('comms',this)">الخطة التواصلية</button>
     <button class="nav-btn" id="nav-timeline" onclick="showTab('timeline',this)">الجدول الزمني</button>
     <button class="nav-btn" id="nav-admin" onclick="showTab('admin',this)" style="display:none;">
-      ⚙ إدارة الخطط
-      <span class="admin-badge"></span>
+      ⚙ إدارة الخطط<span class="admin-dot"></span>
     </button>
     <button class="nav-btn" id="nav-pages" onclick="showTab('pages',this)" style="display:none;">
-      📄 إدارة الصفحات
-      <span class="admin-badge"></span>
+      📄 إدارة الصفحات<span class="admin-dot"></span>
     </button>
   </div>
 
-  <!-- Content -->
   <div class="content">
 
-    <!-- ── OVERVIEW TAB ── -->
+    <!-- ── OVERVIEW ── -->
     <div class="tab-pane active" id="tab-overview">
       <div class="grid-4">
         <div class="kpi-card">
           <div class="kpi-label">إجمالي الخطط المستلمة</div>
           <div class="kpi-val" id="kpi-total">69</div>
-          <div class="kpi-sub">من أصل 93 خطة مستهدفة</div>
+          <div class="kpi-sub">من أصل 72 خطة مستهدفة</div>
         </div>
-        <div class="kpi-card" style="--accent:var(--green-a);">
+        <div class="kpi-card">
           <div class="kpi-label">الخطط الرئيسية</div>
-          <div class="kpi-val"><span style="color:#4ec99a;" id="kpi-main-recv">33</span> / <span style="font-size:18px;color:var(--text-m);">36</span></div>
-          <div class="kpi-sub">متبقي: <span id="kpi-main-rem">3</span> خطة</div>
+          <div class="kpi-val"><span style="color:var(--green-a);" id="kpi-main-recv">33</span><span style="font-size:16px;color:var(--text-s);"> / 36</span></div>
+          <div class="kpi-sub">متبقي: <span id="kpi-main-rem">3</span> خطط</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">خطط الجهات الداعمة</div>
-         <div class="kpi-val"><span style="color:#4ec99a;" id="kpi-sup-recv">36</span> / <span style="font-size:18px;color:var(--text-m);">57</span></div>
-         <div class="kpi-sub">متبقي: <span id="kpi-sup-rem">21</span> خطة</div>
+          <div class="kpi-val"><span style="color:var(--green-a);" id="kpi-sup-recv">36</span><span style="font-size:16px;color:var(--text-s);"> / 36</span></div>
+          <div class="kpi-sub">متبقي: <span id="kpi-sup-rem">0</span> خطط</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">نسبة الاكتمال الإجمالية</div>
-         <div class="kpi-val" id="kpi-pct">75%</div>
-         <div class="kpi-sub">+300 جهة داعمة</div>
+          <div class="kpi-val" id="kpi-pct">96%</div>
+          <div class="kpi-sub">+300 جهة داعمة</div>
         </div>
       </div>
-
       <div class="grid-2">
         <div class="card">
           <div class="card-title">📊 نسبة الاستلام حسب الفئة</div>
-          <div class="chart-wrap">
-            <canvas id="chartDonut"></canvas>
-          </div>
+          <div class="chart-wrap"><canvas id="chartDonut"></canvas></div>
         </div>
         <div class="card">
           <div class="card-title">📅 الاستلام الشهري</div>
-          <div class="chart-wrap">
-            <canvas id="chartBar"></canvas>
-          </div>
+          <div class="chart-wrap"><canvas id="chartBar"></canvas></div>
         </div>
       </div>
-
       <div class="card">
         <div class="card-title">⚡ نسبة الاستلام التفصيلية</div>
-        <div class="prog-row"><div class="prog-label">الخطط الرئيسية</div><div class="prog-track"><div class="prog-fill" style="width:92%;background:var(--gold);"></div></div><div class="prog-pct" id="prog-main">92%</div></div>
-       <div class="prog-row"><div class="prog-label">خطط الجهات الداعمة</div><div class="prog-track"><div class="prog-fill" style="width:63%;background:#4ec99a;"></div></div><div class="prog-pct" id="prog-sup">63%</div></div>
-       <div class="prog-row"><div class="prog-label">الإجمالي</div><div class="prog-track"><div class="prog-fill" style="width:75%;background:var(--blue-a);"></div></div><div class="prog-pct" id="prog-total">75%</div></div>
+        <div class="prog-row"><div class="prog-label">الخطط الرئيسية</div><div class="prog-track"><div class="prog-fill" style="width:92%;background:var(--gold-l);"></div></div><div class="prog-pct" id="prog-main">92%</div></div>
+        <div class="prog-row"><div class="prog-label">خطط الجهات الداعمة</div><div class="prog-track"><div class="prog-fill" style="width:100%;background:var(--green-a);"></div></div><div class="prog-pct" id="prog-sup">100%</div></div>
+        <div class="prog-row"><div class="prog-label">الإجمالي</div><div class="prog-track"><div class="prog-fill" style="width:96%;background:var(--blue-a);"></div></div><div class="prog-pct" id="prog-total">96%</div></div>
       </div>
     </div>
 
-    <!-- ── PLANS TAB ── -->
+    <!-- ── PLANS ── -->
     <div class="tab-pane" id="tab-plans">
       <div class="section-head">الخطط التواصلية المستلمة <span id="plans-count-label">69 خطة مستلمة من 72</span></div>
       <div class="admin-panel">
@@ -649,14 +521,7 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
         <div class="admin-table-wrap">
           <table id="plans-table">
             <thead>
-              <tr>
-                <th>#</th>
-                <th>اسم الجهة</th>
-                <th>النوع</th>
-                <th>تاريخ الاستلام</th>
-                <th>حالة التحليل</th>
-                <th>حالة الاستلام</th>
-              </tr>
+              <tr><th>#</th><th>اسم الجهة</th><th>النوع</th><th>تاريخ الاستلام</th><th>حالة التحليل</th><th>حالة الاستلام</th></tr>
             </thead>
             <tbody id="plans-tbody"></tbody>
           </table>
@@ -664,112 +529,77 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
       </div>
     </div>
 
-    <!-- ── COMMS TAB ── -->
+    <!-- ── COMMS ── -->
     <div class="tab-pane" id="tab-comms">
       <div class="section-head">الخطة التواصلية للإطلاق الجزئي</div>
       <div class="grid-3">
         <div class="card">
           <div class="card-title">✅ الخيار المعتمد</div>
-          <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.3);border-radius:10px;padding:14px;margin-bottom:12px;">
-            <div style="color:#4ec99a;font-size:15px;font-weight:700;">الإطلاق الجزئي</div>
+          <div style="background:var(--green-bg);border:1px solid rgba(39,174,96,.3);border-radius:10px;padding:14px;margin-bottom:12px;">
+            <div style="color:var(--green-d);font-size:15px;font-weight:700;">الإطلاق الجزئي</div>
             <div style="color:var(--text-m);font-size:11px;margin-top:5px;line-height:1.7;">متفق عليه من قبل أعضاء لجنة التواصل — مع تعديل السردية والنبرة</div>
           </div>
         </div>
         <div class="card">
           <div class="card-title">📐 مسار السردية</div>
-          <div class="prog-row"><div class="prog-label">إبراز الجاهزية</div><div class="prog-track"><div class="prog-fill" style="width:50%;background:var(--gold);"></div></div><div class="prog-pct">50%</div></div>
-          <div class="prog-row"><div class="prog-label">تعزيز الثقة</div><div class="prog-track"><div class="prog-fill" style="width:30%;background:#4ec99a;"></div></div><div class="prog-pct">30%</div></div>
+          <div class="prog-row"><div class="prog-label">إبراز الجاهزية</div><div class="prog-track"><div class="prog-fill" style="width:50%;background:var(--gold-l);"></div></div><div class="prog-pct">50%</div></div>
+          <div class="prog-row"><div class="prog-label">تعزيز الثقة</div><div class="prog-track"><div class="prog-fill" style="width:30%;background:var(--green-a);"></div></div><div class="prog-pct">30%</div></div>
           <div class="prog-row"><div class="prog-label">الطمأنة</div><div class="prog-track"><div class="prog-fill" style="width:20%;background:var(--blue-a);"></div></div><div class="prog-pct">20%</div></div>
         </div>
         <div class="card">
           <div class="card-title">🎙 النبرة التواصلية</div>
           <div style="display:flex;flex-direction:column;gap:7px;">
-            <div style="background:rgba(39,174,96,.12);border-right:3px solid #4ec99a;padding:7px 12px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-c);">نبرة متزنة — هادئة وموثوقة</div>
-            <div style="background:rgba(39,174,96,.12);border-right:3px solid #4ec99a;padding:7px 12px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-c);">نبرة موحدة — تعكس شمولية الرؤية</div>
-            <div style="background:rgba(39,174,96,.12);border-right:3px solid #4ec99a;padding:7px 12px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-c);">نبرة تركز على الإنجاز</div>
-            <div style="background:rgba(39,174,96,.12);border-right:3px solid #4ec99a;padding:7px 12px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-c);">نبرة مطمئنة — تعزز الثقة</div>
+            <div style="background:var(--green-bg);border-right:3px solid var(--green-l);padding:8px 12px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-b);">نبرة متزنة — هادئة وموثوقة</div>
+            <div style="background:var(--green-bg);border-right:3px solid var(--green-l);padding:8px 12px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-b);">نبرة موحدة — تعكس شمولية الرؤية</div>
+            <div style="background:var(--green-bg);border-right:3px solid var(--green-l);padding:8px 12px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-b);">نبرة تركز على الإنجاز</div>
+            <div style="background:var(--green-bg);border-right:3px solid var(--green-l);padding:8px 12px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-b);">نبرة مطمئنة — تعزز الثقة</div>
           </div>
         </div>
       </div>
-
-      <div class="card" style="margin-bottom:18px;">
+      <div class="card">
         <div class="card-title">🗓 الإطار الزمني التواصلي (أبريل — يوليو 2026)</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:8px;">
-          <div style="background:rgba(184,146,42,.1);border:1px solid rgba(184,146,42,.25);border-radius:10px;padding:14px;text-align:center;">
-            <div style="color:var(--gold-p);font-size:12px;font-weight:700;margin-bottom:6px;">أبريل 2026</div>
-            <div style="color:var(--text-c);font-size:11px;line-height:1.6;">إطلاق التقرير السنوي والعواجل المصاحبة</div>
-          </div>
-          <div style="background:rgba(41,128,185,.1);border:1px solid rgba(41,128,185,.25);border-radius:10px;padding:14px;text-align:center;">
-            <div style="color:#7ec8e3;font-size:12px;font-weight:700;margin-bottom:6px;">مايو 2026</div>
-            <div style="color:var(--text-c);font-size:11px;line-height:1.6;">تواصل مركز على القطاعات والأمن القومي</div>
-          </div>
-          <div style="background:rgba(39,174,96,.1);border:1px solid rgba(39,174,96,.25);border-radius:10px;padding:14px;text-align:center;">
-            <div style="color:#4ec99a;font-size:12px;font-weight:700;margin-bottom:6px;">يونيو 2026</div>
-            <div style="color:var(--text-c);font-size:11px;line-height:1.6;">التمهيد لبرنامج الذكرى العاشرة</div>
-          </div>
-          <div style="background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.4);border-radius:10px;padding:14px;text-align:center;">
-            <div style="color:#4ec99a;font-size:12px;font-weight:700;margin-bottom:6px;">يوليو 2026</div>
-            <div style="color:var(--text-c);font-size:11px;line-height:1.6;">الإطلاق الرسمي لبرنامج الذكرى العاشرة</div>
-          </div>
+          <div style="background:var(--gold-bg);border:1px solid rgba(155,120,32,.3);border-radius:10px;padding:14px;text-align:center;"><div style="color:var(--gold-p);font-size:12px;font-weight:700;margin-bottom:6px;">أبريل 2026</div><div style="color:var(--text-b);font-size:11px;line-height:1.6;">إطلاق التقرير السنوي والعواجل المصاحبة</div></div>
+          <div style="background:var(--blue-bg);border:1px solid rgba(36,113,163,.25);border-radius:10px;padding:14px;text-align:center;"><div style="color:#1a5276;font-size:12px;font-weight:700;margin-bottom:6px;">مايو 2026</div><div style="color:var(--text-b);font-size:11px;line-height:1.6;">تواصل مركز على القطاعات والأمن القومي</div></div>
+          <div style="background:var(--green-bg);border:1px solid rgba(39,174,96,.3);border-radius:10px;padding:14px;text-align:center;"><div style="color:var(--green-d);font-size:12px;font-weight:700;margin-bottom:6px;">يونيو 2026</div><div style="color:var(--text-b);font-size:11px;line-height:1.6;">التمهيد لبرنامج الذكرى العاشرة</div></div>
+          <div style="background:var(--green-bg);border:1.5px solid rgba(39,174,96,.5);border-radius:10px;padding:14px;text-align:center;"><div style="color:var(--green-d);font-size:12px;font-weight:700;margin-bottom:6px;">يوليو 2026</div><div style="color:var(--text-b);font-size:11px;line-height:1.6;">الإطلاق الرسمي لبرنامج الذكرى العاشرة</div></div>
         </div>
       </div>
     </div>
 
-    <!-- ── TIMELINE TAB ── -->
+    <!-- ── TIMELINE ── -->
     <div class="tab-pane" id="tab-timeline">
       <div class="section-head">مسار القرارات والأحداث الرئيسية</div>
       <div class="grid-2">
         <div class="card">
-          <div class="card-title">📍 الجدول الزمني</div>
-          <div class="tl">
-            <div class="tl-item"><div class="tl-dot done"></div><div class="tl-date">يناير 2026</div><div class="tl-title">اعتماد الخطة التنفيذية للذكرى العاشرة</div><div class="tl-desc">بدأ التحضير والتنفيذ من أبريل 2026</div></div>
-            <div class="tl-item"><div class="tl-dot done"></div><div class="tl-date">28 فبراير 2026</div><div class="tl-title">بدء الصراع الجيوسياسي في المنطقة</div><div class="tl-desc">تأثير على الأوضاع الإقليمية — مراجعة توقيت الإطلاق</div></div>
-            <div class="tl-item"><div class="tl-dot done"></div><div class="tl-date">26 مارس 2026</div><div class="tl-title">اجتماع لجنة فريق الذكرى العاشرة (23)</div><div class="tl-desc">استعراض التوجه المقترح للإطلاق في ظل الوضع الراهن</div></div>
-            <div class="tl-item"><div class="tl-dot done"></div><div class="tl-date">1 أبريل 2026</div><div class="tl-title">الاتفاق على خيار الإطلاق الجزئي</div><div class="tl-desc">قرار لجنة التواصل لرؤية المملكة 2030</div></div>
-            <div class="tl-item"><div class="tl-dot done"></div><div class="tl-date">15 أبريل 2026</div><div class="tl-title">اجتماع لجنة التواصل — عرض الخطة النهائية</div><div class="tl-desc">عرض الخطة التواصلية على أعضاء اللجنة للاعتماد</div></div>
-            <div class="tl-item"><div class="tl-dot pending"></div><div class="tl-date">21 أبريل 2026</div><div class="tl-title">جلسات إحاطة مع الجهات الرئيسية</div><div class="tl-desc">استعراض الخطة التواصلية والتوجهات الأولية</div></div>
-            <div class="tl-item"><div class="tl-dot pending"></div><div class="tl-date">25 أبريل 2026</div><div class="tl-title">إطلاق التقرير السنوي للرؤية 2025</div><div class="tl-desc">مرحلة التواصل الأولى</div></div>
-            <div class="tl-item"><div class="tl-dot pending"></div><div class="tl-date">يونيو — يوليو 2026</div><div class="tl-title">الإطلاق الرسمي للذكرى العاشرة</div><div class="tl-desc">مشروط بانتهاء الأوضاع الجيوسياسية</div></div>
+          <div class="card-title" style="justify-content:space-between;">
+            <span>📍 الجدول الزمني</span>
           </div>
+          <div class="tl" id="timeline-list"></div>
         </div>
         <div class="card">
-          <div class="card-title">📋 أبرز التحديثات الجارية</div>
-          <div style="display:flex;flex-direction:column;gap:12px;">
-            <div style="background:rgba(255,255,255,.04);border-right:3px solid var(--gold);padding:14px;border-radius:0 10px 10px 0;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <div style="width:28px;height:28px;background:rgba(184,146,42,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-l);">01</div>
-                <div style="color:var(--gold-l);font-size:13px;font-weight:600;">البيان الصحفي</div>
-                <span class="badge badge-gold" style="margin-right:auto;font-size:10px;">قيد التطوير</span>
-              </div>
-              <div style="color:var(--text-m);font-size:12px;line-height:1.7;">جارٍ العمل على البيان الصحفي وتحديثه استناداً إلى السرديات المحدّثة، على أن يُعاد مشاركته للاعتماد</div>
-            </div>
-            <div style="background:rgba(255,255,255,.04);border-right:3px solid var(--gold);padding:14px;border-radius:0 10px 10px 0;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-                <div style="width:28px;height:28px;background:rgba(184,146,42,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--gold-l);">02</div>
-                <div style="color:var(--gold-l);font-size:13px;font-weight:600;">اقتباسات القيادة</div>
-                <span class="badge badge-gold" style="margin-right:auto;font-size:10px;">قيد التنسيق</span>
-              </div>
-              <div style="color:var(--text-m);font-size:12px;line-height:1.7;">جارٍ العمل على تحديثها مع التنسيق مع المكتب الإعلامي لسمو ولي العهد حفظه الله</div>
-            </div>
+          <div class="card-title" style="justify-content:space-between;">
+            <span>📋 أبرز التحديثات الجارية</span>
           </div>
+          <div id="updates-list"></div>
         </div>
       </div>
     </div>
 
-    <!-- ── ADMIN TAB ── -->
+    <!-- ── ADMIN PLANS ── -->
     <div class="tab-pane" id="tab-admin">
       <div class="section-head">⚙ إدارة الخطط التواصلية <span>— صلاحيات الأدمن</span></div>
-      <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
-        <button class="add-row-btn" onclick="addNewPlan()">+ إضافة خطة جديدة</button>
-        <button class="add-row-btn" style="background:rgba(41,128,185,.1);border-color:rgba(41,128,185,.4);color:#7ec8e3;" onclick="exportCSV()">⬇ تصدير CSV</button>
-        <div style="margin-right:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-m);">
-          تم الحفظ آخر مرة: <span id="last-save" style="color:var(--gold-p);">—</span>
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
+        <button class="add-row-btn" onclick="addNewPlan()">+ إضافة خطة</button>
+        <button class="add-row-btn blue" onclick="exportCSV()">⬇ تصدير CSV</button>
+        <div style="margin-right:auto;font-size:12px;color:var(--text-m);">
+          آخر حفظ: <span id="last-save" style="color:var(--green-l);font-weight:600;">—</span>
         </div>
       </div>
       <div class="admin-panel">
         <div class="admin-header">
           <div class="admin-header-title">📋 قائمة الخطط — التعديل والحذف</div>
-          <div style="font-size:11px;color:var(--text-m);">إجمالي: <span id="admin-count" style="color:var(--gold-p);font-weight:700;">59</span> خطة</div>
+          <div style="font-size:11px;color:var(--text-m);">إجمالي: <span id="admin-count" style="color:var(--green-d);font-weight:700;">73</span> خطة</div>
         </div>
         <div class="admin-search">
           <input type="text" placeholder="🔍 بحث..." id="admin-search" oninput="renderAdminTable()">
@@ -781,61 +611,128 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
         </div>
         <div class="admin-table-wrap">
           <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>اسم الجهة</th>
-                <th>النوع</th>
-                <th>تاريخ الاستلام</th>
-                <th>حالة الاستلام</th>
-                <th>حالة التحليل</th>
-                <th>إجراءات</th>
-              </tr>
-            </thead>
+            <thead><tr><th>#</th><th>اسم الجهة</th><th>النوع</th><th>تاريخ الاستلام</th><th>حالة الاستلام</th><th>حالة التحليل</th><th>إجراءات</th></tr></thead>
             <tbody id="admin-tbody"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ── PAGES ADMIN TAB ── -->
+    <!-- ── PAGES ADMIN ── -->
     <div class="tab-pane" id="tab-pages">
-      <div class="section-head">📄 إدارة الصفحات والتبويبات <span>— تفعيل / إخفاء الصفحات</span></div>
+      <div class="section-head">📄 إدارة الصفحات <span>— تفعيل / إخفاء الصفحات</span></div>
       <div id="pages-list"></div>
     </div>
 
   </div><!-- /content -->
 </div><!-- /app -->
 
-<!-- Delete modal -->
+<!-- ── Delete modal ── -->
 <div class="modal-overlay" id="delete-modal">
   <div class="modal">
     <h3>⚠ تأكيد الحذف</h3>
-    <p id="delete-modal-text">هل أنت متأكد من حذف هذه الخطة؟ لا يمكن التراجع عن هذا الإجراء.</p>
+    <p id="delete-modal-text">هل أنت متأكد من الحذف؟</p>
     <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
+      <button class="btn-cancel" onclick="closeModal('delete-modal')">إلغاء</button>
       <button class="btn-delete" onclick="confirmDelete()">حذف نهائي</button>
     </div>
   </div>
 </div>
 
-<!-- Save indicator -->
+<!-- ── Timeline item modal ── -->
+<div class="modal-overlay" id="tl-modal">
+  <div class="modal">
+    <h3 id="tl-modal-title">إضافة حدث جديد</h3>
+    <input type="hidden" id="tl-edit-id">
+    <div class="form-group">
+      <label>التاريخ</label>
+      <input type="text" id="tl-date" placeholder="مثال: 15 مايو 2026">
+    </div>
+    <div class="form-group">
+      <label>عنوان الحدث</label>
+      <input type="text" id="tl-title-input" placeholder="اسم الحدث أو القرار">
+    </div>
+    <div class="form-group">
+      <label>التفاصيل</label>
+      <textarea id="tl-desc-input" placeholder="وصف تفصيلي للحدث..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>الحالة</label>
+      <select id="tl-status">
+        <option value="done">✅ مكتمل</option>
+        <option value="pending">🔄 قادم / مرتقب</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('tl-modal')">إلغاء</button>
+      <button class="btn-save" onclick="saveTlItem()">حفظ الحدث</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Update item modal ── -->
+<div class="modal-overlay" id="upd-modal">
+  <div class="modal">
+    <h3 id="upd-modal-title">إضافة تحديث جديد</h3>
+    <input type="hidden" id="upd-edit-id">
+    <div class="form-group">
+      <label>عنوان التحديث</label>
+      <input type="text" id="upd-title" placeholder="مثال: البيان الصحفي">
+    </div>
+    <div class="form-group">
+      <label>الحالة</label>
+      <select id="upd-status">
+        <option value="قيد التطوير">قيد التطوير</option>
+        <option value="قيد التنسيق">قيد التنسيق</option>
+        <option value="مكتمل">مكتمل</option>
+        <option value="متوقف">متوقف</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>التفاصيل</label>
+      <textarea id="upd-body" placeholder="تفاصيل التحديث..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('upd-modal')">إلغاء</button>
+      <button class="btn-save" onclick="saveUpdItem()">حفظ التحديث</button>
+    </div>
+  </div>
+</div>
+
 <div class="save-indicator" id="save-indicator">✓ تم الحفظ بنجاح</div>
 
 <script>
-// ══════════════════════════════════════════════════════════
-// DATA
-// ══════════════════════════════════════════════════════════
+// ══════════════ DATA ══════════════
 let currentUser = null;
 let deleteTarget = null;
+let deleteType = 'plan';
+let editTlId = null;
+let editUpdId = null;
+let tlNextId = 10;
+let updNextId = 10;
 
 const USERS = {
-  admin: { password:'vision2030', role:'admin',  name:'مدير النظام', avatar:'A' },
-  hani:  { password:'1234',       role:'viewer', name:'هاني المقبل',  avatar:'ه' },
+  admin: { password:'vision2030', role:'admin', name:'مدير النظام', avatar:'A' },
+  هاني:  { password:'1234',       role:'viewer', name:'هاني',        avatar:'ه' },
 };
 
+let tlItems = [
+  {id:1, date:'يناير 2026',       title:'اعتماد الخطة التنفيذية للذكرى العاشرة',          desc:'بدأ التحضير والتنفيذ من أبريل 2026',                                   status:'done'},
+  {id:2, date:'28 فبراير 2026',   title:'بدء الصراع الجيوسياسي في المنطقة',               desc:'تأثير على الأوضاع الإقليمية — مراجعة توقيت الإطلاق',                  status:'done'},
+  {id:3, date:'26 مارس 2026',     title:'اجتماع لجنة فريق الذكرى العاشرة (23)',            desc:'استعراض التوجه المقترح للإطلاق في ظل الوضع الراهن',                   status:'done'},
+  {id:4, date:'1 أبريل 2026',     title:'الاتفاق على خيار الإطلاق الجزئي',                desc:'قرار لجنة التواصل لرؤية المملكة 2030',                                 status:'done'},
+  {id:5, date:'15 أبريل 2026',    title:'اجتماع لجنة التواصل — عرض الخطة النهائية',       desc:'عرض الخطة التواصلية على أعضاء اللجنة للاعتماد',                       status:'done'},
+  {id:6, date:'21 أبريل 2026',    title:'جلسات إحاطة مع الجهات الرئيسية',                desc:'استعراض الخطة التواصلية والتوجهات الأولية',                            status:'pending'},
+  {id:7, date:'25 أبريل 2026',    title:'إطلاق التقرير السنوي للرؤية 2025',               desc:'مرحلة التواصل الأولى',                                                 status:'pending'},
+  {id:8, date:'يونيو — يوليو 2026', title:'الإطلاق الرسمي للذكرى العاشرة',               desc:'مشروط بانتهاء الأوضاع الجيوسياسية',                                   status:'pending'},
+];
+
+let updItems = [
+  {id:1, title:'البيان الصحفي',    status:'قيد التطوير', body:'جارٍ العمل على البيان الصحفي وتحديثه استناداً إلى السرديات المحدّثة، على أن يُعاد مشاركته للاعتماد'},
+  {id:2, title:'اقتباسات القيادة', status:'قيد التنسيق', body:'جارٍ العمل على تحديثها مع التنسيق مع المكتب الإعلامي لسمو ولي العهد حفظه الله'},
+];
+
 let plans = [
-  // ── الخطط الرئيسية المستلمة (33) ──────────────────────────────────────────
   {id:1,  name:'وزارة الرياضة',                                    type:'رئيسية', date:'01/01/2026', analysis:'تم التحليل',     status:'مستلمة'},
   {id:2,  name:'وزارة الخارجية',                                   type:'رئيسية', date:'04/01/2026', analysis:'تم التحليل',     status:'مستلمة'},
   {id:3,  name:'وزارة الصحة',                                      type:'رئيسية', date:'14/01/2026', analysis:'تم التحليل',     status:'مستلمة'},
@@ -869,11 +766,9 @@ let plans = [
   {id:31, name:'صندوق الاستثمارات العامة والمشاريع الكبرى',        type:'رئيسية', date:'29/03/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
   {id:32, name:'الهيئة السعودية للبيانات والذكاء الاصطناعي',       type:'رئيسية', date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
   {id:33, name:'وزارة البلديات والإسكان',                          type:'رئيسية', date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
-  // ── الخطط الرئيسية المتبقية (3) ───────────────────────────────────────────
   {id:34, name:'الهيئة الملكية لمدينة الرياض',                     type:'رئيسية', date:'—',          analysis:'—',              status:'لم تُستلم'},
   {id:35, name:'صندوق التنمية الوطني',                             type:'رئيسية', date:'—',          analysis:'—',              status:'لم تُستلم'},
   {id:36, name:'وزارة الاستثمار',                                  type:'رئيسية', date:'—',          analysis:'—',              status:'لم تُستلم'},
-  // ── خطط الجهات الداعمة المستلمة (36) ─────────────────────────────────────
   {id:37, name:'هيئة كفاءة الانفاق والمشروعات الحكومية',           type:'داعمة',  date:'22/01/2026', analysis:'تم التحليل',     status:'مستلمة'},
   {id:38, name:'وزارة الحج والعمرة',                               type:'داعمة',  date:'23/02/2026', analysis:'تم التحليل',     status:'مستلمة'},
   {id:39, name:'هيئة الصناعات العسكرية',                           type:'داعمة',  date:'15/02/2026', analysis:'تم التحليل',     status:'مستلمة'},
@@ -883,13 +778,13 @@ let plans = [
   {id:43, name:'الاتحاد السعودي للرياضات الإلكترونية',             type:'داعمة',  date:'15/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
   {id:44, name:'الهيئة الوطنية للأمن السيبراني',                   type:'داعمة',  date:'16/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
   {id:45, name:'مجموعة روشن',                                      type:'داعمة',  date:'17/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
-  {id:46, name:'المركز السعودي للاعتماد (منظومة وزارة التجارة)',   type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
-  {id:47, name:'المركز السعودي للأعمال (منظومة وزارة التجارة)',    type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
-  {id:48, name:'المركز الوطني للتنافسية (منظومة وزارة التجارة)',   type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
+  {id:46, name:'المركز السعودي للاعتماد',                          type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
+  {id:47, name:'المركز السعودي للأعمال',                           type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
+  {id:48, name:'المركز الوطني للتنافسية',                          type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
   {id:49, name:'الهيئة السعودية للمراجعين والمحاسبين',             type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
   {id:50, name:'الهيئة العامة للتجارة الخارجية',                   type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
-  {id:51, name:'المواصفات السعودية (منظومة وزارة التجارة)',         type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
-  {id:52, name:'منشآت (منظومة وزارة التجارة)',                     type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
+  {id:51, name:'المواصفات السعودية',                                type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
+  {id:52, name:'منشآت',                                            type:'داعمة',  date:'02/03/2026', analysis:'تم التحليل',     status:'مستلمة'},
   {id:53, name:'إكسبو',                                            type:'داعمة',  date:'29/03/2026', analysis:'جاري التحليل',   status:'مستلمة'},
   {id:54, name:'الهيئة السعودية للتخصصات الصحية',                  type:'داعمة',  date:'29/03/2026', analysis:'جاري التحليل',   status:'مستلمة'},
   {id:55, name:'هيئة التأمين',                                     type:'داعمة',  date:'29/03/2026', analysis:'جاري التحليل',   status:'مستلمة'},
@@ -900,31 +795,26 @@ let plans = [
   {id:60, name:'هيئة تطوير المدينة المنورة',                       type:'داعمة',  date:'02/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
   {id:61, name:'نادي سباقات الخيل',                                type:'داعمة',  date:'05/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
   {id:62, name:'المركز السعودي لكود البناء',                        type:'داعمة',  date:'05/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
-  {id:63, name:'الهيئة العامة للإحصاء',                            type:'داعمة',  date:'01/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
-  {id:64, name:'هيئة المحتوى المحلي والمشتريات الحكومية',          type:'داعمة',  date:'06/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
-  {id:65, name:'منظومة الاقتصاد الرقمي والتقني والفضاء',           type:'داعمة',  date:'09/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
-  {id:66, name:'مكتبة الملك فهد',                                  type:'داعمة',  date:'09/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
-  {id:67, name:'الهيئة العامة للأوقاف',                            type:'داعمة',  date:'09/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
-  {id:68, name:'مجمع الملك عبدالعزيز للمكتبات الوقفية',            type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
-  {id:69, name:'حديقة الملك سلمان',                                type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
-  {id:70, name:'مجموعة السعودية',                                  type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
-  {id:71, name:'جامعة الأمير سلطان بن عبدالعزيز',                 type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
-  {id:72, name:'الأمانة العامة لمجلس المخاطر الوطنية',             type:'داعمة',  date:'05/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
-  {id:73, name:'هيئة حقوق الإنسان',                               type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
+  {id:63, name:'هيئة المحتوى المحلي والمشتريات الحكومية',          type:'داعمة',  date:'06/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
+  {id:64, name:'منظومة الاقتصاد الرقمي والتقني والفضاء',           type:'داعمة',  date:'09/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
+  {id:65, name:'مكتبة الملك فهد',                                  type:'داعمة',  date:'09/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
+  {id:66, name:'الهيئة العامة للأوقاف',                            type:'داعمة',  date:'09/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
+  {id:67, name:'مجمع الملك عبدالعزيز للمكتبات الوقفية',            type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
+  {id:68, name:'حديقة الملك سلمان',                                type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
+  {id:69, name:'مجموعة السعودية',                                  type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
+  {id:70, name:'جامعة الأمير سلطان بن عبدالعزيز',                 type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
+  {id:71, name:'الأمانة العامة لمجلس المخاطر الوطنية',             type:'داعمة',  date:'05/04/2026', analysis:'سيُشارك قريباً', status:'مستلمة'},
+  {id:72, name:'هيئة حقوق الإنسان',                               type:'داعمة',  date:'—',          analysis:'جاري التحليل',   status:'مستلمة'},
 ];
+let nextId = 73;
 
-let nextId = 74;
-
-// Pages config
 const pagesConfig = [
-  {id:'plans',    label:'الخطط المستلمة',      icon:'📋', desc:'عرض قائمة الخطط التواصلية المستلمة',       navId:'nav-plans',    visible:true},
-  {id:'comms',    label:'الخطة التواصلية',      icon:'📡', desc:'عرض الخطة التواصلية ومسارات السردية',     navId:'nav-comms',    visible:true},
-  {id:'timeline', label:'الجدول الزمني',         icon:'🗓', desc:'عرض مسار القرارات والأحداث الرئيسية',   navId:'nav-timeline', visible:true},
+  {id:'plans',    label:'الخطط المستلمة',    icon:'📋', desc:'عرض قائمة الخطط التواصلية المستلمة',    navId:'nav-plans',    visible:true},
+  {id:'comms',    label:'الخطة التواصلية',   icon:'📡', desc:'عرض الخطة التواصلية ومسارات السردية',  navId:'nav-comms',    visible:true},
+  {id:'timeline', label:'الجدول الزمني',      icon:'🗓', desc:'عرض مسار القرارات والأحداث الرئيسية', navId:'nav-timeline', visible:true},
 ];
 
-// ══════════════════════════════════════════════════════════
-// AUTH
-// ══════════════════════════════════════════════════════════
+// ══════════════ AUTH ══════════════
 function doLogin() {
   const u = document.getElementById('username').value.trim();
   const p = document.getElementById('password').value;
@@ -933,8 +823,7 @@ function doLogin() {
     currentUser = { ...USERS[u], username: u };
     err.style.display = 'none';
     document.getElementById('login-page').style.display = 'none';
-    const app = document.getElementById('app');
-    app.classList.add('visible');
+    document.getElementById('app').classList.add('visible');
     document.getElementById('user-name').textContent = currentUser.name;
     document.getElementById('user-avatar').textContent = currentUser.avatar;
     document.getElementById('user-role-badge').textContent = currentUser.role === 'admin' ? 'أدمن' : 'قراءة';
@@ -942,18 +831,13 @@ function doLogin() {
       document.getElementById('nav-admin').style.display = '';
       document.getElementById('nav-pages').style.display = '';
     }
-    initCharts();
-    renderPlansTable();
-    renderAdminTable();
-    renderPagesAdmin();
+    initCharts(); renderPlansTable(); renderAdminTable(); renderPagesAdmin();
+    renderTimeline(); renderUpdates();
   } else {
     err.style.display = 'block';
-    err.style.animation = 'none';
-    setTimeout(() => err.style.animation = '', 10);
   }
 }
-
-document.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+document.addEventListener('keydown', e => { if (e.key==='Enter') doLogin(); });
 
 function doLogout() {
   currentUser = null;
@@ -961,106 +845,95 @@ function doLogout() {
   document.getElementById('login-page').style.display = 'flex';
   document.getElementById('username').value = '';
   document.getElementById('password').value = '';
-  // Reset nav active
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
   document.getElementById('nav-admin').style.display = 'none';
   document.getElementById('nav-pages').style.display = 'none';
   document.querySelector('.nav-btn').classList.add('active');
   document.getElementById('tab-overview').classList.add('active');
 }
 
-// ══════════════════════════════════════════════════════════
-// TABS
-// ══════════════════════════════════════════════════════════
+// ══════════════ TABS ══════════════
 function showTab(id, btn) {
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
   if (btn) btn.classList.add('active');
 }
 
-// ══════════════════════════════════════════════════════════
-// STATS
-// ══════════════════════════════════════════════════════════
+// ══════════════ STATS ══════════════
 function computeStats() {
-  const recv = plans.filter(p => p.status === 'مستلمة');
-  const mainRecv = recv.filter(p => p.type === 'رئيسية').length;
-  const supRecv  = recv.filter(p => p.type === 'داعمة').length;
-  const mainTotal = 36, supTotal = 57, grandTotal = 93;
-  return { recv: recv.length, mainRecv, supRecv, mainRem: mainTotal - mainRecv, supRem: supTotal - supRecv, mainPct: Math.round(mainRecv/mainTotal*100), supPct: Math.round(supRecv/supTotal*100), totalPct: Math.round(recv.length/grandTotal*100) };
+  const recv = plans.filter(p=>p.status==='مستلمة');
+  const mainRecv = recv.filter(p=>p.type==='رئيسية').length;
+  const supRecv  = recv.filter(p=>p.type==='داعمة').length;
+  const mainTotal=36, supTotal=36, grandTotal=72;
+  return {recv:recv.length, mainRecv, supRecv,
+    mainRem:mainTotal-mainRecv, supRem:supTotal-supRecv,
+    mainPct:Math.round(mainRecv/mainTotal*100),
+    supPct:Math.round(supRecv/supTotal*100),
+    totalPct:Math.round(recv.length/grandTotal*100)};
 }
-
 function updateKPIs() {
-  const s = computeStats();
-  document.getElementById('kpi-total').textContent = s.recv;
-  document.getElementById('kpi-main-recv').textContent = s.mainRecv;
-  document.getElementById('kpi-main-rem').textContent = s.mainRem;
-  document.getElementById('kpi-sup-recv').textContent = s.supRecv;
-  document.getElementById('kpi-sup-rem').textContent = s.supRem;
-  document.getElementById('kpi-pct').textContent = s.totalPct + '%';
-  document.querySelector('#prog-main').textContent = s.mainPct + '%';
-  document.querySelector('#prog-sup').textContent = s.supPct + '%';
-  document.querySelector('#prog-total').textContent = s.totalPct + '%';
-  document.querySelectorAll('.prog-fill')[0].style.width = s.mainPct + '%';
-  document.querySelectorAll('.prog-fill')[1].style.width = s.supPct + '%';
-  document.querySelectorAll('.prog-fill')[2].style.width = s.totalPct + '%';
-  // Update plans label
-  document.getElementById('plans-count-label').textContent = `${s.recv} خطة مستلمة من 72`;
-  document.getElementById('admin-count').textContent = plans.length;
+  const s=computeStats();
+  document.getElementById('kpi-total').textContent=s.recv;
+  document.getElementById('kpi-main-recv').textContent=s.mainRecv;
+  document.getElementById('kpi-main-rem').textContent=s.mainRem;
+  document.getElementById('kpi-sup-recv').textContent=s.supRecv;
+  document.getElementById('kpi-sup-rem').textContent=s.supRem;
+  document.getElementById('kpi-pct').textContent=s.totalPct+'%';
+  document.getElementById('prog-main').textContent=s.mainPct+'%';
+  document.getElementById('prog-sup').textContent=s.supPct+'%';
+  document.getElementById('prog-total').textContent=s.totalPct+'%';
+  document.querySelectorAll('.prog-fill')[0].style.width=s.mainPct+'%';
+  document.querySelectorAll('.prog-fill')[1].style.width=s.supPct+'%';
+  document.querySelectorAll('.prog-fill')[2].style.width=s.totalPct+'%';
+  document.getElementById('plans-count-label').textContent=`${s.recv} خطة مستلمة من 72`;
+  document.getElementById('admin-count').textContent=plans.length;
 }
 
-// ══════════════════════════════════════════════════════════
-// CHARTS
-// ══════════════════════════════════════════════════════════
+// ══════════════ CHARTS ══════════════
 let donutChart, barChart;
 function initCharts() {
-  const s = computeStats();
-  const dCtx = document.getElementById('chartDonut');
-  donutChart = new Chart(dCtx, {
+  const s=computeStats();
+  donutChart = new Chart(document.getElementById('chartDonut'), {
     type:'doughnut',
-    data:{ labels:['مستلمة','متبقية'], datasets:[{data:[69, 3], backgroundColor:['#27ae60','#c0392b'], borderWidth:0, hoverOffset:4}] },
-    options:{ responsive:true, maintainAspectRatio:false, cutout:'70%', plugins:{ legend:{ display:true, position:'bottom', labels:{ color:'#8aab91', padding:16, boxWidth:12 } } } }
+    data:{labels:['مستلمة','متبقية'],datasets:[{data:[s.recv,72-s.recv],backgroundColor:['#27ae60','#e74c3c'],borderWidth:0,hoverOffset:4}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'70%',
+      plugins:{legend:{display:true,position:'bottom',labels:{color:'#6b8570',padding:16,boxWidth:12}}}}
   });
-  const bCtx = document.getElementById('chartBar');
-  barChart = new Chart(bCtx, {
+  barChart = new Chart(document.getElementById('chartBar'), {
     type:'bar',
     data:{
       labels:['ديس 2025','يناير','فبراير','مارس','أبريل 2026'],
       datasets:[
-        { label:'رئيسية', data:[4,6,4,9,4], backgroundColor:'#b8922a' },
-        { label:'داعمة',  data:[0,3,3,10,16], backgroundColor:'#27ae60' }
+        {label:'رئيسية',data:[4,6,4,9,4],backgroundColor:'#c09a28'},
+        {label:'داعمة', data:[0,3,3,10,16],backgroundColor:'#27ae60'}
       ]
     },
-    options:{ responsive:true, maintainAspectRatio:false, scales:{ x:{ stacked:true, grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#8aab91'} }, y:{ stacked:true, grid:{color:'rgba(255,255,255,.05)'}, ticks:{color:'#8aab91'} } }, plugins:{ legend:{ position:'bottom', labels:{color:'#8aab91', boxWidth:12} } } }
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{stacked:true,grid:{color:'rgba(46,92,58,.08)'},ticks:{color:'#6b8570'}},
+              y:{stacked:true,grid:{color:'rgba(46,92,58,.08)'},ticks:{color:'#6b8570'}}},
+      plugins:{legend:{position:'bottom',labels:{color:'#6b8570',boxWidth:12}}}}
   });
 }
-
 function refreshCharts() {
   if (!donutChart) return;
-  const s = computeStats();
-  donutChart.data.datasets[0].data = [s.recv, 72-s.recv];
+  const s=computeStats();
+  donutChart.data.datasets[0].data=[s.recv,72-s.recv];
   donutChart.update();
 }
 
-// ══════════════════════════════════════════════════════════
-// PLANS TABLE (read-only)
-// ══════════════════════════════════════════════════════════
-function filterPlans() { renderPlansTable(); }
-
+// ══════════════ PLANS TABLE ══════════════
+function filterPlans(){renderPlansTable();}
 function renderPlansTable() {
-  const search = (document.getElementById('search-plans')?.value || '').toLowerCase();
-  const ftype  = document.getElementById('filter-type')?.value || '';
-  const fstat  = document.getElementById('filter-status')?.value || '';
-  const tbody  = document.getElementById('plans-tbody');
-  let filtered = plans.filter(p => {
-    return (!search || p.name.includes(search)) &&
-           (!ftype  || p.type === ftype) &&
-           (!fstat  || p.status === fstat);
-  });
-  tbody.innerHTML = filtered.map((p,i) => `
+  const q=(document.getElementById('search-plans')?.value||'').toLowerCase();
+  const ft=document.getElementById('filter-type')?.value||'';
+  const fs=document.getElementById('filter-status')?.value||'';
+  const tb=document.getElementById('plans-tbody');
+  const filtered=plans.filter(p=>(!q||p.name.includes(q))&&(!ft||p.type===ft)&&(!fs||p.status===fs));
+  tb.innerHTML=filtered.map((p,i)=>`
     <tr>
-      <td style="color:var(--text-m);width:36px;">${i+1}</td>
+      <td style="color:var(--text-s);width:36px;">${i+1}</td>
       <td style="font-weight:600;">${p.name}</td>
       <td><span class="badge ${p.type==='رئيسية'?'badge-gold':'badge-blue'}">${p.type}</span></td>
       <td style="color:var(--text-m);">${p.date}</td>
@@ -1068,28 +941,23 @@ function renderPlansTable() {
       <td><span class="badge ${p.status==='مستلمة'?'badge-green':'badge-red'}">${p.status}</span></td>
     </tr>`).join('');
 }
-
 function analysisBadge(a) {
-  if (a==='تم التحليل') return `<span class="badge badge-green">${a}</span>`;
-  if (a==='جاري التحليل') return `<span class="badge badge-gold">${a}</span>`;
-  if (a==='سيُشارك قريباً') return `<span class="badge badge-blue">${a}</span>`;
-  return `<span class="badge" style="background:rgba(255,255,255,.07);color:var(--text-m);">${a}</span>`;
+  if(a==='تم التحليل')    return`<span class="badge badge-green">${a}</span>`;
+  if(a==='جاري التحليل')  return`<span class="badge badge-gold">${a}</span>`;
+  if(a==='سيُشارك قريباً')return`<span class="badge badge-blue">${a}</span>`;
+  return`<span class="badge" style="background:var(--bg2);color:var(--text-m);">${a}</span>`;
 }
 
-// ══════════════════════════════════════════════════════════
-// ADMIN TABLE
-// ══════════════════════════════════════════════════════════
+// ══════════════ ADMIN TABLE ══════════════
 function renderAdminTable() {
-  const search = (document.getElementById('admin-search')?.value || '').toLowerCase();
-  const ftype  = document.getElementById('admin-filter-type')?.value || '';
-  let filtered = plans.filter(p =>
-    (!search || p.name.includes(search)) && (!ftype || p.type === ftype)
-  );
-  const tbody = document.getElementById('admin-tbody');
-  tbody.innerHTML = filtered.map((p,i) => `
-    <tr id="row-${p.id}">
-      <td style="color:var(--text-m);width:36px;">${i+1}</td>
-      <td style="font-weight:600;min-width:160px;">${p.name}</td>
+  const q=(document.getElementById('admin-search')?.value||'').toLowerCase();
+  const ft=document.getElementById('admin-filter-type')?.value||'';
+  const filtered=plans.filter(p=>(!q||p.name.includes(q))&&(!ft||p.type===ft));
+  const tb=document.getElementById('admin-tbody');
+  tb.innerHTML=filtered.map((p,i)=>`
+    <tr>
+      <td style="color:var(--text-s);width:36px;">${i+1}</td>
+      <td style="font-weight:600;min-width:150px;">${p.name}</td>
       <td><span class="badge ${p.type==='رئيسية'?'badge-gold':'badge-blue'}">${p.type}</span></td>
       <td style="color:var(--text-m);">${p.date}</td>
       <td>
@@ -1107,86 +975,178 @@ function renderAdminTable() {
         </select>
       </td>
       <td>
-        <div style="display:flex;gap:6px;">
-          <button class="action-btn del" onclick="openDeleteModal(${p.id})">🗑 حذف</button>
-        </div>
+        <button class="action-btn del" onclick="openDeleteModal(${p.id},'plan')">🗑 حذف</button>
       </td>
     </tr>`).join('');
-  document.getElementById('admin-count').textContent = plans.length;
+  document.getElementById('admin-count').textContent=plans.length;
+}
+function updateStatus(id,field,val) {
+  const plan=plans.find(p=>p.id===id);
+  if(plan){plan[field]=val;if(field==='status'&&val==='لم تُستلم')plan.date='—';
+    updateKPIs();refreshCharts();renderPlansTable();showSave();}
+}
+function addNewPlan() {
+  const name=prompt('أدخل اسم الجهة الجديدة:');
+  if(!name||!name.trim())return;
+  const type=confirm('هل هي خطة رئيسية؟\nموافق = رئيسية | إلغاء = داعمة')?'رئيسية':'داعمة';
+  plans.push({id:nextId++,name:name.trim(),type,date:'—',analysis:'—',status:'لم تُستلم'});
+  renderAdminTable();renderPlansTable();updateKPIs();refreshCharts();showSave();
+}
+function exportCSV() {
+  const rows=[['#','الجهة','النوع','التاريخ','حالة الاستلام','حالة التحليل']];
+  plans.forEach((p,i)=>rows.push([i+1,p.name,p.type,p.date,p.status,p.analysis]));
+  const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'}));
+  a.download='خطط_الذكرى_العاشرة.csv';a.click();
 }
 
-function updateStatus(id, field, val) {
-  const plan = plans.find(p => p.id === id);
-  if (plan) {
-    plan[field] = val;
-    if (field === 'status' && val === 'لم تُستلم') plan.date = '—';
-    updateKPIs();
-    refreshCharts();
-    renderPlansTable();
-    showSaveIndicator();
+// ══════════════ TIMELINE ══════════════
+function renderTimeline() {
+  const isAdmin = currentUser?.role==='admin';
+  const tl = document.getElementById('timeline-list');
+  // Admin add button at top
+  const addBtn = isAdmin ? `<div style="margin-bottom:14px;">
+    <button class="add-row-btn" onclick="openTlModal()">+ إضافة حدث</button>
+  </div>` : '';
+  tl.innerHTML = addBtn + tlItems.map(t=>`
+    <div class="tl-item" id="tl-item-${t.id}">
+      <div class="tl-dot ${t.status}"></div>
+      <div class="tl-date">${t.date}</div>
+      <div class="tl-title">${t.title}</div>
+      <div class="tl-desc">${t.desc}</div>
+      ${isAdmin?`<div class="tl-actions">
+        <button class="action-btn edit-btn" onclick="openTlModal(${t.id})">✏ تعديل</button>
+        <button class="action-btn del" onclick="openDeleteModal(${t.id},'tl')">🗑 حذف</button>
+      </div>`:''}
+    </div>`).join('');
+}
+
+function openTlModal(id=null) {
+  editTlId = id;
+  document.getElementById('tl-modal-title').textContent = id ? 'تعديل الحدث' : 'إضافة حدث جديد';
+  if (id) {
+    const t = tlItems.find(x=>x.id===id);
+    document.getElementById('tl-date').value        = t.date;
+    document.getElementById('tl-title-input').value = t.title;
+    document.getElementById('tl-desc-input').value  = t.desc;
+    document.getElementById('tl-status').value      = t.status;
+  } else {
+    document.getElementById('tl-date').value='';
+    document.getElementById('tl-title-input').value='';
+    document.getElementById('tl-desc-input').value='';
+    document.getElementById('tl-status').value='pending';
   }
+  document.getElementById('tl-modal').classList.add('open');
+}
+function saveTlItem() {
+  const date  = document.getElementById('tl-date').value.trim();
+  const title = document.getElementById('tl-title-input').value.trim();
+  const desc  = document.getElementById('tl-desc-input').value.trim();
+  const status= document.getElementById('tl-status').value;
+  if (!title||!date) { alert('يرجى ملء حقلي التاريخ والعنوان'); return; }
+  if (editTlId) {
+    const t = tlItems.find(x=>x.id===editTlId);
+    Object.assign(t,{date,title,desc,status});
+  } else {
+    tlItems.push({id:tlNextId++,date,title,desc,status});
+  }
+  renderTimeline(); closeModal('tl-modal'); showSave();
 }
 
-function openDeleteModal(id) {
-  deleteTarget = id;
-  const plan = plans.find(p => p.id === id);
-  document.getElementById('delete-modal-text').textContent = `هل أنت متأكد من حذف خطة "${plan?.name}"؟ لا يمكن التراجع عن هذا الإجراء.`;
+// ══════════════ UPDATES ══════════════
+const updStatusBadge = s => {
+  const map={'قيد التطوير':'badge-gold','قيد التنسيق':'badge-blue','مكتمل':'badge-green','متوقف':'badge-red'};
+  return `<span class="badge ${map[s]||'badge-gold'}">${s}</span>`;
+};
+function renderUpdates() {
+  const isAdmin = currentUser?.role==='admin';
+  const el = document.getElementById('updates-list');
+  const addBtn = isAdmin ? `<div style="margin-bottom:14px;">
+    <button class="add-row-btn gold" onclick="openUpdModal()">+ إضافة تحديث</button>
+  </div>` : '';
+  el.innerHTML = addBtn + updItems.map((u,i)=>`
+    <div class="update-card">
+      <div class="update-card-header">
+        <div class="update-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="update-title">${u.title}</div>
+        <div style="margin-right:auto;">${updStatusBadge(u.status)}</div>
+      </div>
+      <div class="update-body">${u.body}</div>
+      ${isAdmin?`<div class="update-actions">
+        <button class="action-btn edit-btn" onclick="openUpdModal(${u.id})">✏ تعديل</button>
+        <button class="action-btn del" onclick="openDeleteModal(${u.id},'upd')">🗑 حذف</button>
+      </div>`:''}
+    </div>`).join('');
+}
+function openUpdModal(id=null) {
+  editUpdId = id;
+  document.getElementById('upd-modal-title').textContent = id ? 'تعديل التحديث' : 'إضافة تحديث جديد';
+  if (id) {
+    const u=updItems.find(x=>x.id===id);
+    document.getElementById('upd-title').value  = u.title;
+    document.getElementById('upd-status').value = u.status;
+    document.getElementById('upd-body').value   = u.body;
+  } else {
+    document.getElementById('upd-title').value='';
+    document.getElementById('upd-status').value='قيد التطوير';
+    document.getElementById('upd-body').value='';
+  }
+  document.getElementById('upd-modal').classList.add('open');
+}
+function saveUpdItem() {
+  const title  = document.getElementById('upd-title').value.trim();
+  const status = document.getElementById('upd-status').value;
+  const body   = document.getElementById('upd-body').value.trim();
+  if (!title) { alert('يرجى إدخال عنوان التحديث'); return; }
+  if (editUpdId) {
+    const u=updItems.find(x=>x.id===editUpdId);
+    Object.assign(u,{title,status,body});
+  } else {
+    updItems.push({id:updNextId++,title,status,body});
+  }
+  renderUpdates(); closeModal('upd-modal'); showSave();
+}
+
+// ══════════════ DELETE ══════════════
+function openDeleteModal(id, type) {
+  deleteTarget=id; deleteType=type;
+  const names={plan:'الخطة',tl:'الحدث',upd:'التحديث'};
+  let name='';
+  if(type==='plan'){const x=plans.find(p=>p.id===id);name=x?.name||'';}
+  else if(type==='tl'){const x=tlItems.find(t=>t.id===id);name=x?.title||'';}
+  else if(type==='upd'){const x=updItems.find(u=>u.id===id);name=x?.title||'';}
+  document.getElementById('delete-modal-text').textContent=`هل أنت متأكد من حذف ${names[type]} "${name}"؟ لا يمكن التراجع عن هذا الإجراء.`;
   document.getElementById('delete-modal').classList.add('open');
 }
-
-function closeModal() {
-  document.getElementById('delete-modal').classList.remove('open');
-  deleteTarget = null;
-}
-
 function confirmDelete() {
-  if (deleteTarget !== null) {
-    plans = plans.filter(p => p.id !== deleteTarget);
-    renderAdminTable();
-    renderPlansTable();
-    updateKPIs();
-    refreshCharts();
-    showSaveIndicator();
-    closeModal();
+  if(deleteType==='plan'){
+    plans=plans.filter(p=>p.id!==deleteTarget);
+    renderAdminTable();renderPlansTable();updateKPIs();refreshCharts();
+  } else if(deleteType==='tl'){
+    tlItems=tlItems.filter(t=>t.id!==deleteTarget);renderTimeline();
+  } else if(deleteType==='upd'){
+    updItems=updItems.filter(u=>u.id!==deleteTarget);renderUpdates();
   }
+  closeModal('delete-modal'); showSave();
 }
 
-function addNewPlan() {
-  const name = prompt('أدخل اسم الجهة الجديدة:');
-  if (!name || !name.trim()) return;
-  const type = confirm('هل هي خطة رئيسية؟\nاضغط موافق للرئيسية، إلغاء للداعمة') ? 'رئيسية' : 'داعمة';
-  plans.push({ id: nextId++, name: name.trim(), type, date: '—', analysis:'—', status:'لم تُستلم' });
-  renderAdminTable();
-  renderPlansTable();
-  updateKPIs();
-  refreshCharts();
-  showSaveIndicator();
+// ══════════════ MODAL ══════════════
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  deleteTarget=null;
 }
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+});
 
-function exportCSV() {
-  const rows = [['#','الجهة','النوع','التاريخ','حالة الاستلام','حالة التحليل']];
-  plans.forEach((p,i) => rows.push([i+1, p.name, p.type, p.date, p.status, p.analysis]));
-  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'خطط_الذكرى_العاشرة.csv';
-  a.click();
-}
-
-// ══════════════════════════════════════════════════════════
-// PAGES ADMIN
-// ══════════════════════════════════════════════════════════
+// ══════════════ PAGES ══════════════
 function renderPagesAdmin() {
-  const container = document.getElementById('pages-list');
-  container.innerHTML = pagesConfig.map(page => `
+  document.getElementById('pages-list').innerHTML=pagesConfig.map(page=>`
     <div class="page-card" id="page-card-${page.id}">
       <div class="page-card-info">
         <div class="page-icon">${page.icon}</div>
-        <div>
-          <div class="page-name">${page.label}</div>
-          <div class="page-desc">${page.desc}</div>
-        </div>
+        <div><div class="page-name">${page.label}</div><div class="page-desc">${page.desc}</div></div>
       </div>
       <div class="page-actions">
         <span style="font-size:11px;color:var(--text-m);margin-left:10px;" id="page-status-${page.id}">${page.visible?'مرئي':'مخفي'}</span>
@@ -1194,55 +1154,37 @@ function renderPagesAdmin() {
           <input type="checkbox" ${page.visible?'checked':''} onchange="togglePage('${page.id}',this.checked)">
           <span class="page-toggle-slider"></span>
         </label>
-        <button class="action-btn del" onclick="deletePage('${page.id}')">🗑 حذف الصفحة</button>
+        <button class="action-btn del" onclick="deletePage('${page.id}')">🗑 حذف</button>
       </div>
     </div>`).join('');
 }
-
-function togglePage(id, visible) {
-  const page = pagesConfig.find(p => p.id === id);
-  if (!page) return;
-  page.visible = visible;
-  const navEl = document.getElementById(page.navId);
-  if (navEl) navEl.style.display = visible ? '' : 'none';
-  document.getElementById('page-status-'+id).textContent = visible ? 'مرئي' : 'مخفي';
-  showSaveIndicator();
+function togglePage(id,visible) {
+  const p=pagesConfig.find(x=>x.id===id);if(!p)return;
+  p.visible=visible;
+  const el=document.getElementById(p.navId);if(el)el.style.display=visible?'':'none';
+  document.getElementById('page-status-'+id).textContent=visible?'مرئي':'مخفي';
+  showSave();
 }
-
 function deletePage(id) {
-  if (!confirm('هل تريد حذف هذه الصفحة نهائياً من لوحة التحكم؟')) return;
-  const idx = pagesConfig.findIndex(p => p.id === id);
-  if (idx > -1) {
-    const page = pagesConfig[idx];
-    const navEl = document.getElementById(page.navId);
-    if (navEl) navEl.style.display = 'none';
-    pagesConfig.splice(idx, 1);
-    // If active, go to overview
-    const tabEl = document.getElementById('tab-' + id);
-    if (tabEl && tabEl.classList.contains('active')) {
-      showTab('overview', document.querySelector('.nav-btn'));
-    }
-    renderPagesAdmin();
-    showSaveIndicator();
+  if(!confirm('هل تريد حذف هذه الصفحة نهائياً؟'))return;
+  const idx=pagesConfig.findIndex(p=>p.id===id);
+  if(idx>-1){
+    const p=pagesConfig[idx];
+    const el=document.getElementById(p.navId);if(el)el.style.display='none';
+    pagesConfig.splice(idx,1);
+    const tab=document.getElementById('tab-'+id);
+    if(tab&&tab.classList.contains('active'))showTab('overview',document.querySelector('.nav-btn'));
+    renderPagesAdmin();showSave();
   }
 }
 
-// ══════════════════════════════════════════════════════════
-// SAVE INDICATOR
-// ══════════════════════════════════════════════════════════
-function showSaveIndicator() {
-  const el = document.getElementById('save-indicator');
-  const now = new Date();
-  const t = now.toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('last-save').textContent = t;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2000);
+// ══════════════ SAVE ══════════════
+function showSave() {
+  const el=document.getElementById('save-indicator');
+  const t=new Date().toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});
+  const ls=document.getElementById('last-save');if(ls)ls.textContent=t;
+  el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2000);
 }
-
-// Close modal on overlay click
-document.getElementById('delete-modal').addEventListener('click', function(e){
-  if (e.target === this) closeModal();
-});
 </script>
 </body>
 </html>
