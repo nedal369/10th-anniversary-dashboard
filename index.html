@@ -241,8 +241,9 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
     <!-- OVERVIEW -->
     <div class="tab-pane active" id="tab-overview">
       <div class="grid-4">
-        <div class="kpi-card"><div class="kpi-label">إجمالي الخطط المستلمة</div><div class="kpi-val" id="kpi-total">69</div><div class="kpi-sub">من أصل 93 خطة مستهدفة</div></div>
-        <div class="kpi-card"><div class="kpi-label">الخطط الرئيسية</div><div class="kpi-val"><span style="color:#4ec99a;" id="kpi-main-recv">33</span> / <span style="font-size:18px;color:var(--text-m);">36</span></div><div class="kpi-sub">متبقي: <span id="kpi-main-rem">3</span> خطة</div></div>
+        
+        <div class="kpi-card"><div class="kpi-label">إجمالي الخطط المستلمة</div><div class="kpi-val" id="kpi-total">70</div><div class="kpi-sub">من أصل 93 خطة مستهدفة</div></div>
+        <div class="kpi-card"><div class="kpi-label">الخطط الرئيسية</div><div class="kpi-val"><span style="color:#4ec99a;" id="kpi-main-recv">34</span> / <span style="font-size:18px;color:var(--text-m);">36</span></div><div class="kpi-sub">متبقي: <span id="kpi-main-rem">2</span> خطة</div></div>
         <div class="kpi-card"><div class="kpi-label">خطط الجهات الداعمة</div><div class="kpi-val"><span style="color:#4ec99a;" id="kpi-sup-recv">36</span> / <span style="font-size:18px;color:var(--text-m);">57</span></div><div class="kpi-sub">متبقي: <span id="kpi-sup-rem">21</span> خطة</div></div>
         <div class="kpi-card"><div class="kpi-label">نسبة الاكتمال الإجمالية</div><div class="kpi-val" id="kpi-pct">75%</div><div class="kpi-sub">+300 جهة داعمة</div></div>
       </div>
@@ -262,7 +263,7 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
       </div>
       <div class="card">
         <div class="card-title">⚡ نسبة الاستلام التفصيلية</div>
-        <div class="prog-row"><div class="prog-label">الخطط الرئيسية</div><div class="prog-track"><div class="prog-fill" style="width:92%;background:var(--gold);"></div></div><div class="prog-pct" id="prog-main">92%</div></div>
+        <div class="prog-row"><div class="prog-label">الخطط الرئيسية</div><div class="prog-track"><div class="prog-fill" style="width:92%;background:var(--gold);"></div></div><div class="prog-pct" id="prog-main">94%</div></div>
         <div class="prog-row"><div class="prog-label">خطط الجهات الداعمة</div><div class="prog-track"><div class="prog-fill" style="width:63%;background:#4ec99a;"></div></div><div class="prog-pct" id="prog-sup">63%</div></div>
         <div class="prog-row"><div class="prog-label">الإجمالي</div><div class="prog-track"><div class="prog-fill" style="width:75%;background:var(--blue-a);"></div></div><div class="prog-pct" id="prog-total">75%</div></div>
       </div>
@@ -270,7 +271,7 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
 
     <!-- PLANS TAB -->
     <div class="tab-pane" id="tab-plans">
-      <div class="section-head">الخطط التواصلية المستلمة <span id="plans-count-label">69 خطة مستلمة من 72</span></div>
+      <div class="section-head">الخطط التواصلية المستلمة <span id="plans-count-label">70 خطة مستلمة من 93</span></div>
       <div class="admin-panel">
         <div class="admin-search">
           <input type="text" placeholder="🔍 بحث عن جهة..." id="search-plans" oninput="filterPlans()">
@@ -587,7 +588,7 @@ let donutChart, barChart;
 function initCharts() {
   donutChart = new Chart(document.getElementById('chartDonut'), {
     type:'doughnut',
-    data:{ labels:['مستلمة','متبقية'], datasets:[{data:[69,3],backgroundColor:['#27ae60','#c0392b'],borderWidth:0,hoverOffset:4}] },
+    data:{ labels:['مستلمة','متبقية'], datasets:[{data:[70,23],backgroundColor:['#27ae60','#c0392b'],borderWidth:0,hoverOffset:4}] },
     options:{ responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{display:true,position:'bottom',labels:{color:'#5a7a60',padding:16,boxWidth:12}}} }
   });
   barChart = new Chart(document.getElementById('chartBar'), {
