@@ -6,6 +6,7 @@
 <title>البرنامج الوطني للذكرى العاشرة — رؤية 2030</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   /* Light theme */
@@ -603,10 +604,7 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
       </div>
     </div>
     <div class="topbar-right">
-      <div id="conn-status" style="font-size:11px;padding:4px 10px;background:rgba(255,255,255,0.07);border-radius:8px;border:1px solid rgba(255,255,255,0.12);">⚪ لم يتم ربط Sheets</div>
-      <button id="btn-sheets-setup" onclick="syncFromSheets()" style="display:none;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.35);color:#4ec99a;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:Cairo,sans-serif;transition:all .2s;" title="تحديث من Google Sheets">
-        🔄 تحديث Sheets
-      </button>
+
       <div class="user-badge">
         <div class="user-avatar" id="user-avatar">A</div>
         <span id="user-name">مدير النظام</span>
@@ -792,8 +790,7 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
     <div class="tab-pane" id="tab-admin-timeline">
       <div class="section-head">📅 إدارة الجدول الزمني والتحديثات <span>— صلاحيات الأدمن</span></div>
       <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
-        <button class="add-row-btn" style="background:rgba(39,174,96,.1);border-color:rgba(39,174,96,.4);color:#1a7a40;" onclick="syncFromSheets()">🔄 تحديث من Sheets</button>
-        <div style="font-size:11px;color:var(--text-m);" id="tl-sync-info">يتم الحفظ تلقائياً في Google Sheets عند كل تعديل</div>
+        <div style="font-size:11px;color:var(--text-m);">يتم الحفظ تلقائياً في المتصفح عند كل تعديل</div>
       </div>
       <div class="grid-2">
         <!-- Timeline admin -->
@@ -822,11 +819,27 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
     <!-- ── ADMIN TAB ── -->
     <div class="tab-pane" id="tab-admin">
       <div class="section-head">⚙ إدارة الخطط التواصلية <span>— صلاحيات الأدمن</span></div>
+
+      <!-- منطقة رفع Excel -->
+      <div style="background:var(--dark3);border:2px dashed var(--green-l);border-radius:14px;padding:28px;text-align:center;margin-bottom:20px;transition:all .2s;" id="excel-drop-zone">
+        <div style="font-size:36px;margin-bottom:10px;">📊</div>
+        <div style="font-size:14px;font-weight:700;color:var(--topbar-bg);margin-bottom:6px;">رفع ملف Excel لتحديث البيانات</div>
+        <div style="font-size:11px;color:var(--text-m);margin-bottom:16px;">يجب أن يحتوي الملف على أعمدة: اسم الجهة — النوع — تاريخ الاستلام — حالة التحليل — حالة الاستلام</div>
+        <input type="file" id="excel-input" accept=".xlsx,.xls" style="display:none;" onchange="handleExcelUpload(this)">
+        <button onclick="document.getElementById('excel-input').click()" style="background:linear-gradient(135deg,var(--topbar-bg),var(--green-m));color:#fff;border:none;border-radius:10px;padding:12px 28px;font-size:13px;font-weight:700;font-family:Cairo,sans-serif;cursor:pointer;">
+          📂 اختر ملف Excel
+        </button>
+        <br>
+        <button onclick="downloadExcelTemplate()" style="background:transparent;border:1.5px solid var(--green-l);color:var(--green-m);border-radius:8px;padding:8px 18px;font-size:12px;font-family:Cairo,sans-serif;cursor:pointer;margin-top:8px;">
+          ⬇ تحميل نموذج Excel فارغ
+        </button>
+        <div id="excel-status" style="margin-top:12px;font-size:12px;color:var(--text-m);"></div>
+      </div>
+
       <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
         <button class="add-row-btn" onclick="addNewPlan()">+ إضافة خطة جديدة</button>
-        <button class="add-row-btn" style="background:rgba(41,128,185,.1);border-color:rgba(41,128,185,.4);color:#7ec8e3;" onclick="exportCSV()">⬇ تصدير CSV</button>
-        <button class="add-row-btn" style="background:rgba(39,174,96,.1);border-color:rgba(39,174,96,.4);color:#1a7a40;" onclick="syncFromSheets()">🔄 تحديث من Sheets</button>
-        <button class="add-row-btn" style="background:rgba(39,174,96,.15);border-color:rgba(39,174,96,.5);color:#1a7a40;font-weight:700;" onclick="sheetSaveAllPlans().then(()=>showSaveIndicator())">☁ حفظ الكل في Sheets</button>
+        <button class="add-row-btn" style="background:rgba(41,128,185,.1);border-color:rgba(41,128,185,.4);color:#1a5276;" onclick="exportToExcel()">⬇ تصدير Excel</button>
+
         <div style="margin-right:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-m);">
           تم الحفظ آخر مرة: <span id="last-save" style="color:var(--gold-p);">—</span>
         </div>
@@ -948,238 +961,40 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
 <script>
 // ════════════════════════════════════════════════════════════════════════════
 // Google Sheets — ربط مباشر عبر API Key + Apps Script للكتابة
-// ════════════════════════════════════════════════════════════════════════════
-const SHEETS_API_KEY = "AIzaSyBMpxNwz41KBSbI-1PILbe68iE4q5PW-8s";
-const SHEETS_ID      = "1HkD2XTCeqAnr11-g3eKqn8u4J0HuVY4FtOY-EWN0uek";
-const SHEETS_BASE    = "https://sheets.googleapis.com/v4/spreadsheets";
-const GAS_WRITE_URL  = "https://script.google.com/macros/s/AKfycbz_6o1GpeM7x8s8r1JMAwRtl-onFUGY_JztBzOrD0BCKkIPGNoFH3o1-UcfEPQLIV8d/exec";
-
-let isOnline = false;
-
-const SH = {
-  plans:    "الخطط",
-  timeline: "الجدول_الزمني",
-  updates:  "التحديثات",
-  users:    "المستخدمون",
-  log:      "سجل_التعديلات",
-};
-
-// ════════════════════════════════════════════════════════════════════════════
-// قراءة البيانات — Google Sheets API v4
-// ════════════════════════════════════════════════════════════════════════════
-async function sheetsRead(range) {
-  const url = `${SHEETS_BASE}/${SHEETS_ID}/values/${encodeURIComponent(range)}?key=${SHEETS_API_KEY}`;
-  try {
-    const res  = await fetch(url);
-    const json = await res.json();
-    if (json.error) {
-      console.warn("Sheets API error:", json.error.code, json.error.message);
-      // تشخيص المشكلة
-      if (json.error.code === 403) {
-        if (json.error.message.includes('API key')) {
-          showMsg('⚠ API Key غير صحيح أو محدود الصلاحيات');
-        } else {
-          showMsg('⚠ الـ Sheet غير مشارك — اضغط Share وغيّر إلى "Anyone with the link"');
-        }
-      } else if (json.error.code === 404) {
-        showMsg('⚠ لم يتم العثور على الـ Sheet — تحقق من الـ Spreadsheet ID');
-      }
-      return null;
-    }
-    return json.values || [];
-  } catch(e) {
-    console.warn("sheetsRead fetch error:", e);
-    return null;
-  }
+// ══════════════════════════════════════════════════════════════════════════
+// localStorage — حفظ وتحميل البيانات محلياً
+// ══════════════════════════════════════════════════════════════════════════
+function saveToLocal() {
+  localStorage.setItem('v2030_plans',    JSON.stringify(plans));
+  localStorage.setItem('v2030_timeline', JSON.stringify(tlItems));
+  localStorage.setItem('v2030_updates',  JSON.stringify(updItems));
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// كتابة البيانات — Apps Script (يتجاوز CORS)
-// ════════════════════════════════════════════════════════════════════════════
-async function sheetsWrite(sheetName, rows) {
-  if (!GAS_WRITE_URL) return false;
-  try {
-    const data = encodeURIComponent(JSON.stringify(rows));
-    const url  = `${GAS_WRITE_URL}?action=writeSheet&sheet=${encodeURIComponent(sheetName)}&rows=${data}`;
-    // mode:no-cors يرسل الطلب بدون قراءة الرد — يكفي للكتابة
-    await fetch(url, { method:'GET', mode:'no-cors', redirect:'follow' });
-    return true;
-  } catch(e) {
-    console.warn("sheetsWrite error:", e);
-    return false;
-  }
+function loadFromLocal() {
+  const p = localStorage.getItem('v2030_plans');
+  const t = localStorage.getItem('v2030_timeline');
+  const u = localStorage.getItem('v2030_updates');
+  if (p) plans    = JSON.parse(p);
+  if (t) tlItems  = JSON.parse(t);
+  if (u) updItems = JSON.parse(u);
+  if (plans.length)    nextId    = Math.max(...plans.map(x=>parseInt(x.id)||0))    + 1;
+  if (tlItems.length)  tlNextId  = Math.max(...tlItems.map(x=>parseInt(x.id)||0))  + 1;
+  if (updItems.length) updNextId = Math.max(...updItems.map(x=>parseInt(x.id)||0)) + 1;
 }
 
-// ════════════════════════════════════════════════════════════════════════════
-// تحويل الصفوف إلى objects
-// ════════════════════════════════════════════════════════════════════════════
-function rowsToObjects(rows) {
-  if (!rows || rows.length < 2) return [];
-  const headers = rows[0];
-  return rows.slice(1)
-    .filter(r => r && r[0] && String(r[0]).trim() !== '')
-    .map(row => {
-      const obj = {};
-      headers.forEach((h, i) => { obj[h] = (row[i] !== undefined && row[i] !== null) ? String(row[i]) : ''; });
-      return obj;
-    });
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// التزامن من Sheets
-// ════════════════════════════════════════════════════════════════════════════
-async function syncFromSheets() {
-  showConnectionStatus('syncing');
-  try {
-    // اختبر الاتصال أولاً
-    const testRows = await sheetsRead(SH.plans + '!A1:A2');
-    if (testRows === null) {
-      isOnline = false;
-      showConnectionStatus('offline');
-      return;
-    }
-
-    // اقرأ جميع البيانات
-    const [planRows, tlRows, updRows] = await Promise.all([
-      sheetsRead(SH.plans    + '!A:F'),
-      sheetsRead(SH.timeline + '!A:E'),
-      sheetsRead(SH.updates  + '!A:D'),
-    ]);
-
-    // الخطط
-    if (planRows && planRows.length > 1) {
-      const parsed = rowsToObjects(planRows);
-      if (parsed.length > 0) {
-        plans = parsed.map(p => ({
-          id:       isNaN(p.id) ? p.id : parseInt(p.id),
-          name:     p.name     || '',
-          type:     p.type     || 'رئيسية',
-          date:     p.date     || '—',
-          analysis: p.analysis || '—',
-          status:   p.status   || 'لم تُستلم',
-        }));
-        nextId = Math.max(...plans.map(p => parseInt(p.id) || 0)) + 1;
-      }
-    }
-
-    // الجدول الزمني
-    if (tlRows && tlRows.length > 1) {
-      const parsed = rowsToObjects(tlRows);
-      if (parsed.length > 0) {
-        tlItems = parsed.map(t => ({
-          id:     isNaN(t.id) ? t.id : parseInt(t.id),
-          date:   t.date   || '',
-          title:  t.title  || '',
-          desc:   t.desc   || '',
-          status: t.status || 'pending',
-        }));
-        tlNextId = Math.max(...tlItems.map(t => parseInt(t.id) || 0)) + 1;
-      }
-    }
-
-    // التحديثات
-    if (updRows && updRows.length > 1) {
-      const parsed = rowsToObjects(updRows);
-      if (parsed.length > 0) {
-        updItems = parsed.map(u => ({
-          id:     isNaN(u.id) ? u.id : parseInt(u.id),
-          title:  u.title  || '',
-          status: u.status || 'قيد التطوير',
-          body:   u.body   || '',
-        }));
-        updNextId = Math.max(...updItems.map(u => parseInt(u.id) || 0)) + 1;
-      }
-    }
-
-    isOnline = true;
-    showConnectionStatus('online');
-
-    // تحديث الواجهة
-    renderPlansTable(); renderAdminTable();
-    renderTimeline();   renderUpdates();
-    renderAdminTl();    renderAdminUpd();
-    updateKPIs();       refreshCharts();
-
-    console.log('✅ تم التزامن من Google Sheets');
-  } catch(e) {
-    isOnline = false;
-    showConnectionStatus('offline');
-    console.warn('⚠ فشل التزامن:', e);
-  }
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// حفظ البيانات إلى Sheets
-// ════════════════════════════════════════════════════════════════════════════
-async function sheetSaveAllPlans() {
-  const rows = [
-    ['id','name','type','date','analysis','status'],
-    ...plans.map(p => [p.id, p.name, p.type, p.date, p.analysis, p.status])
-  ];
-  await sheetsWrite(SH.plans, rows);
-  showSaveIndicator();
-}
-
-async function sheetSavePlan(plan, isNew)  { await sheetSaveAllPlans(); }
-async function sheetDeletePlan(id)          { await sheetSaveAllPlans(); }
-
-async function sheetSaveTl(item, isNew) {
-  const rows = [
-    ['id','date','title','desc','status'],
-    ...tlItems.map(t => [t.id, t.date, t.title, t.desc, t.status])
-  ];
-  await sheetsWrite(SH.timeline, rows);
-}
-
-async function sheetDeleteTl(id) {
-  const rows = [
-    ['id','date','title','desc','status'],
-    ...tlItems.filter(t => t.id !== id).map(t => [t.id, t.date, t.title, t.desc, t.status])
-  ];
-  await sheetsWrite(SH.timeline, rows);
-}
-
-async function sheetSaveUpd(item, isNew) {
-  const rows = [
-    ['id','title','status','body'],
-    ...updItems.map(u => [u.id, u.title, u.status, u.body])
-  ];
-  await sheetsWrite(SH.updates, rows);
-}
-
-async function sheetDeleteUpd(id) {
-  const rows = [
-    ['id','title','status','body'],
-    ...updItems.filter(u => u.id !== id).map(u => [u.id, u.title, u.status, u.body])
-  ];
-  await sheetsWrite(SH.updates, rows);
-}
-
-// ════════════════════════════════════════════════════════════════════════════
-// مساعدات UI
-// ════════════════════════════════════════════════════════════════════════════
-function showConnectionStatus(state) {
-  const el = document.getElementById('conn-status');
-  if (!el) return;
-  const map = {
-    online:  { dot:'🟢', text:'متصل بـ Google Sheets', color:'#1a7a40' },
-    offline: { dot:'🔴', text:'غير متصل — تحقق من إعدادات الـ Sheet', color:'#c0392b' },
-    syncing: { dot:'🔄', text:'جاري التزامن...', color:'#b8922a' },
-    nourl:   { dot:'⚪', text:'وضع محلي', color:'#8aab91' },
-  };
-  const s = map[state] || map.nourl;
-  el.innerHTML = `<span style="color:${s.color};font-weight:600;">${s.dot} ${s.text}</span>`;
-}
-
-function showMsg(msg) {
-  const el = document.getElementById('conn-status');
-  if (el) el.innerHTML = `<span style="color:#c0392b;font-weight:600;">⚠ ${msg}</span>`;
-}
-
-// Stubs للتوافق مع الكود القديم
-function openGASSetup() {}
-async function saveGASUrl()  { await syncFromSheets(); }
-function clearGASUrl()       {}
+// stubs للتوافق
+function showConnectionStatus(s) {}
+function openGASSetup()           {}
+async function saveGASUrl()       {}
+function clearGASUrl()            {}
+async function sheetSavePlan()    {}
+async function sheetDeletePlan()  {}
+async function sheetSaveTl()      {}
+async function sheetDeleteTl()    {}
+async function sheetSaveUpd()     {}
+async function sheetDeleteUpd()   {}
+async function sheetSaveAllPlans(){ showSaveIndicator(); }
+async function syncFromSheets()   {}
 
 // ══════════════════════════════════════════════════════════
 // DATA
@@ -1320,12 +1135,12 @@ function doLogin() {
     document.getElementById('user-name').textContent = currentUser.name;
     document.getElementById('user-avatar').textContent = currentUser.avatar;
     document.getElementById('user-role-badge').textContent = currentUser.role === 'admin' ? 'أدمن' : 'قراءة';
-    showConnectionStatus(GAS_WRITE_URL ? 'syncing' : 'nourl');
+    showConnectionStatus(GAS_URL ? 'syncing' : 'nourl');
     if (currentUser.role === 'admin') {
       document.getElementById('nav-admin').style.display = '';
       document.getElementById('nav-admin-timeline').style.display = '';
       document.getElementById('nav-pages').style.display = '';
-      document.getElementById('btn-sheets-setup').style.display = '';
+      
     }
     initCharts();
     renderPlansTable();
@@ -1338,19 +1153,8 @@ function doLogin() {
     // Auto-sync from Google Sheets (URL pre-configured)
     showConnectionStatus('syncing');
     setTimeout(async () => {
-      // أولاً: اختبر الاتصال بـ Sheets API
-      try {
-        const testUrl = `${SHEETS_BASE}/${SHEETS_ID}/values/${encodeURIComponent('الخطط!A1')}?key=${SHEETS_API_KEY}`;
-        const testRes = await fetch(testUrl);
-        if (testRes.status === 403) {
-          showConnectionStatus('offline');
-          if (document.getElementById('conn-status'))
-            document.getElementById('conn-status').title = 'تأكد أن الـ Sheet مشارك للعموم (Anyone with link → Viewer)';
-          console.warn('⚠ Sheets API 403: Sheet not public');
-          return;
-        }
-      } catch(e) {}
-      syncFromSheets();
+      // تحميل البيانات من localStorage
+      loadFromLocal();
     }, 400);
   } else {
     err.style.display = 'block';
@@ -1373,7 +1177,7 @@ function doLogout() {
   document.getElementById('nav-admin').style.display = 'none';
   document.getElementById('nav-admin-timeline').style.display = 'none';
   document.getElementById('nav-pages').style.display = 'none';
-  document.getElementById('btn-sheets-setup').style.display = 'none';
+  
   showConnectionStatus('nourl');
   document.querySelector('.nav-btn').classList.add('active');
   document.getElementById('tab-overview').classList.add('active');
@@ -1529,8 +1333,8 @@ function updateStatus(id, field, val) {
   if (plan) {
     plan[field] = val;
     if (field === 'status' && val === 'لم تُستلم') plan.date = '—';
-    updateKPIs(); refreshCharts(); renderPlansTable(); showSaveIndicator();
-    sheetSavePlan(plan, false); // Sync to Sheets
+    updateKPIs(); refreshCharts(); renderPlansTable();
+    saveToLocal(); showSaveIndicator();
   }
 }
 
@@ -1562,6 +1366,7 @@ function confirmDelete() {
     updItems = updItems.filter(u => u.id !== deleteTarget);
     renderUpdates(); renderAdminUpd();
   }
+  saveToLocal();
   closeModal('delete-modal'); showSaveIndicator();
 }
 
@@ -1571,7 +1376,7 @@ function addNewPlan() {
   const type = confirm('هل هي خطة رئيسية؟\nاضغط موافق للرئيسية، إلغاء للداعمة') ? 'رئيسية' : 'داعمة';
   const newPlan = { id: nextId++, name: name.trim(), type, date: '—', analysis:'—', status:'لم تُستلم' };
   plans.push(newPlan);
-  sheetSavePlan(newPlan, true); // Sync to Sheets
+  saveToLocal();
   renderAdminTable(); renderPlansTable(); updateKPIs(); refreshCharts(); showSaveIndicator();
 }
 
@@ -1652,6 +1457,7 @@ function saveTlItem() {
     tlItems.push(newItem);
     sheetSaveTl(newItem, true); // Add to Sheets
   }
+  saveToLocal();
   renderTimeline(); renderAdminTl();
   closeModal('tl-modal'); showSaveIndicator();
 }
@@ -1726,6 +1532,7 @@ function saveUpdItem() {
     updItems.push(newUpd);
     sheetSaveUpd(newUpd, true); // Add to Sheets
   }
+  saveToLocal();
   renderUpdates(); renderAdminUpd();
   closeModal('upd-modal'); showSaveIndicator();
 }
@@ -1790,7 +1597,7 @@ function showSaveIndicator(synced=false) {
   const t = now.toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});
   const ls = document.getElementById('last-save');
   if (ls) ls.textContent = t;
-  el.textContent = isOnline ? '✓ تم الحفظ في Google Sheets' : '✓ تم الحفظ محلياً';
+  el.textContent = '✓ تم الحفظ محلياً في المتصفح';
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), 2500);
 }
@@ -1799,49 +1606,80 @@ function showSaveIndicator(synced=false) {
 document.querySelectorAll('.modal-overlay').forEach(el => {
   el.addEventListener('click', function(e){ if(e.target===this) this.classList.remove('open'); });
 });
+// ══════════════════════════════════════════════════════════
+// Excel Upload & Export
+// ══════════════════════════════════════════════════════════
+function handleExcelUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const statusEl = document.getElementById('excel-status');
+  statusEl.textContent = '⏳ جاري قراءة الملف...';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const wb   = XLSX.read(e.target.result, {type:'binary'});
+      const ws   = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+      if (!rows.length) { statusEl.textContent = '❌ الملف فارغ'; return; }
+      const newPlans = rows.map((row, i) => ({
+        id:       nextId + i,
+        name:     row['اسم الجهة']      || row['name']     || '',
+        type:     row['النوع']           || row['type']     || 'رئيسية',
+        date:     row['تاريخ الاستلام'] || row['date']     || '—',
+        analysis: row['حالة التحليل']   || row['analysis'] || '—',
+        status:   row['حالة الاستلام']  || row['status']   || 'لم تُستلم',
+      })).filter(p => p.name.trim() !== '');
+      if (!newPlans.length) {
+        statusEl.textContent = '❌ لم يتم العثور على بيانات صالحة — تحقق من أسماء الأعمدة';
+        return;
+      }
+      if (!confirm('سيتم استبدال ' + plans.length + ' خطة بـ ' + newPlans.length + ' خطة جديدة من الملف. هل تريد المتابعة؟')) {
+        statusEl.textContent = '⚠ تم الإلغاء';
+        return;
+      }
+      plans  = newPlans;
+      nextId = Math.max(...plans.map(p => p.id)) + 1;
+      saveToLocal();
+      renderAdminTable(); renderPlansTable(); updateKPIs(); refreshCharts();
+      showSaveIndicator();
+      statusEl.innerHTML = '✅ تم تحميل <strong>' + newPlans.length + '</strong> خطة بنجاح من الملف: <strong>' + file.name + '</strong>';
+      document.getElementById('excel-input').value = '';
+    } catch(err) {
+      statusEl.textContent = '❌ خطأ في قراءة الملف — تأكد أنه ملف Excel صحيح';
+      console.error(err);
+    }
+  };
+  reader.readAsBinaryString(file);
+}
+
+function downloadExcelTemplate() {
+  const template = [
+    ['اسم الجهة','النوع','تاريخ الاستلام','حالة التحليل','حالة الاستلام'],
+    ['وزارة المثال','رئيسية','01/01/2026','تم التحليل','مستلمة'],
+    ['جهة داعمة مثال','داعمة','—','—','لم تُستلم'],
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(template);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'الخطط');
+  XLSX.writeFile(wb, 'نموذج_الخطط.xlsx');
+}
+
+function exportToExcel() {
+  const rows = plans.map(p => ({
+    'اسم الجهة':      p.name,
+    'النوع':           p.type,
+    'تاريخ الاستلام': p.date,
+    'حالة التحليل':   p.analysis,
+    'حالة الاستلام':  p.status,
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'الخطط');
+  XLSX.writeFile(wb, 'خطط_الذكرى_العاشرة_' + new Date().toLocaleDateString('ar-SA') + '.xlsx');
+}
+
 </script>
 
-<!-- ── Google Sheets Setup Modal ── -->
-<div class="modal-overlay" id="gas-setup-modal">
-  <div class="modal" style="width:520px;">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
-      <div style="width:44px;height:44px;background:var(--green-bg);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;">📊</div>
-      <div>
-        <h3 style="margin-bottom:2px;">ربط Google Sheets</h3>
-        <p style="margin:0;font-size:11px;color:var(--text-m);">قاعدة بيانات المنصة</p>
-      </div>
-    </div>
-
-    <div style="background:var(--gold-bg);border:1px solid var(--border-g);border-radius:10px;padding:14px;margin-bottom:16px;">
-      <div style="font-size:12px;font-weight:700;color:var(--gold-p);margin-bottom:8px;">📋 خطوات الإعداد:</div>
-      <ol style="font-size:11px;color:var(--text-m);line-height:2;padding-right:16px;">
-        <li>افتح الملف <strong style="color:var(--text-c);">Code.gs</strong> وانسخ محتواه كاملاً</li>
-        <li>افتح <a href="https://sheets.google.com" target="_blank" style="color:var(--green-l);">Google Sheets</a> وأنشئ جدول بيانات جديد</li>
-        <li>اضغط على <strong>Extensions → Apps Script</strong></li>
-        <li>الصق الكود واضغط <strong>Save</strong></li>
-        <li>من القائمة <strong>Deploy → New deployment</strong></li>
-        <li>اختر <strong>Web app</strong> ثم <strong>Execute as: Me</strong> و <strong>Who has access: Anyone</strong></li>
-        <li>اضغط <strong>Deploy</strong> وانسخ الرابط</li>
-        <li>الصق الرابط في الحقل أدناه</li>
-      </ol>
-    </div>
-
-    <div class="form-group">
-      <label>رابط الـ Web App</label>
-      <input type="url" id="gas-url-input"
-        placeholder="https://script.google.com/macros/s/XXXXX/exec"
-        style="font-size:12px;direction:ltr;text-align:left;">
-    </div>
-
-    <div id="gas-test-result" style="font-size:12px;padding:8px 12px;border-radius:8px;margin-bottom:12px;display:none;"></div>
-
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="clearGASUrl()" style="color:var(--red-a);border-color:rgba(192,57,43,0.3);">🗑 إلغاء الربط</button>
-      <button class="btn-cancel" onclick="closeModal('gas-setup-modal')">إلغاء</button>
-      <button class="btn-save" onclick="saveGASUrl()">🔗 حفظ وربط</button>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
