@@ -1074,7 +1074,7 @@ function doLogin() {
     app.classList.add('visible');
     document.getElementById('user-name').textContent = currentUser.name;
     document.getElementById('user-avatar').textContent = currentUser.avatar;
-    document.getElementById('user-role-badge').textContent = currentUser.role === 'admin' ? 'أدمن' : 'قراءة';
+    document.getElementById('user-role-badge').textContent = currentUser.role === 'admin' ? 'أدمن' : 'الرئيس';
     if (currentUser.role === 'admin') {
       document.getElementById('nav-admin').style.display = '';
       document.getElementById('nav-admin-timeline').style.display = '';
