@@ -604,8 +604,8 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
     </div>
     <div class="topbar-right">
       <div id="conn-status" style="font-size:11px;padding:4px 10px;background:rgba(255,255,255,0.07);border-radius:8px;border:1px solid rgba(255,255,255,0.12);">⚪ لم يتم ربط Sheets</div>
-      <button id="btn-sheets-setup" onclick="openGASSetup()" style="display:none;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.35);color:#4ec99a;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:Cairo,sans-serif;transition:all .2s;" title="إعداد ربط Google Sheets">
-        🔗 Google Sheets
+      <button id="btn-sheets-setup" onclick="syncFromSheets()" style="display:none;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.35);color:#4ec99a;padding:6px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:Cairo,sans-serif;transition:all .2s;" title="تحديث من Google Sheets">
+        🔄 تحديث Sheets
       </button>
       <div class="user-badge">
         <div class="user-avatar" id="user-avatar">A</div>
@@ -947,74 +947,93 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
 
 <script>
 // ════════════════════════════════════════════════════════════════════════════
-// إعدادات ربط Google Sheets
-// ضع رابط الـ Web App هنا بعد نشره
+// Google Sheets API v4 — ربط مباشر بدون Apps Script
 // ════════════════════════════════════════════════════════════════════════════
-let GAS_URL = localStorage.getItem('gas_url') || 'https://script.google.com/macros/s/AKfycbw6-n_I20WWp7-nSrQ61ysI-ppQONYoY_mZwrsNF7GWVK0LRXipmYY8ohkrnZdR9Aez/exec';
-let isOnline = false;  // هل المنصة متصلة بـ Google Sheets؟
+const SHEETS_API_KEY  = "AIzaSyBMpxNwz41KBSbI-1PILbe68iE4q5PW-8s";
+const SHEETS_ID       = "1HkD2XTCeqAnr11-g3eKqn8u4J0HuVY4FtOY-EWN0uek";
+const SHEETS_BASE     = "https://sheets.googleapis.com/v4/spreadsheets";
 
-// ── API Helper ──────────────────────────────────────────────────────────────
-async function gasGet(action) {
-  if (!GAS_URL) return null;
+let isOnline = false;
+
+// ── اسماء الأوراق ────────────────────────────────────────────────────────
+const SH = {
+  plans:    "الخطط",
+  timeline: "الجدول_الزمني",
+  updates:  "التحديثات",
+  users:    "المستخدمون",
+  log:      "سجل_التعديلات",
+};
+
+// ── قراءة نطاق من الشيت ──────────────────────────────────────────────────
+async function sheetsRead(range) {
   try {
-    const url = `${GAS_URL}?action=${action}&t=${Date.now()}`;
-    const res = await fetch(url, {
-      method: 'GET',
-      redirect: 'follow',
-    });
-    const text = await res.text();
-    return JSON.parse(text);
-  } catch(e) { console.warn('GAS GET error:', e); return null; }
+    const url = `${SHEETS_BASE}/${SHEETS_ID}/values/${encodeURIComponent(range)}?key=${SHEETS_API_KEY}`;
+    const res = await fetch(url);
+    if (!res.ok) { console.warn("sheetsRead error:", res.status, await res.text()); return []; }
+    const json = await res.json();
+    return json.values || [];
+  } catch(e) { console.warn("sheetsRead exception:", e); return []; }
 }
 
-async function gasPost(body) {
-  if (!GAS_URL) return null;
+// ── كتابة نطاق في الشيت (يحتاج OAuth — نستخدم JSONP trick عبر URL params) ─
+// للكتابة: نرسل عبر Apps Script URL بسيط GET بدلاً من POST
+async function sheetsWrite(sheet, values) {
   try {
-    // Send as form-urlencoded to avoid CORS preflight on Workspace domains
-    const formData = new FormData();
-    formData.append('payload', JSON.stringify(body));
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      redirect: 'follow',
-      body: formData,
-    });
-    const text = await res.text();
-    return JSON.parse(text);
-  } catch(e) {
-    console.warn('GAS POST error:', e);
-    return null;
-  }
+    // نحول البيانات لـ Apps Script عبر GET params (يتجاوز CORS تماماً)
+    const GAS = "https://script.google.com/macros/s/AKfycbw6-n_I20WWp7-nSrQ61ysI-ppQONYoY_mZwrsNF7GWVK0LRXipmYY8ohkrnZdR9Aez/exec";
+    const payload = encodeURIComponent(JSON.stringify({ sheet, values }));
+    const url = `${GAS}?action=write&data=${payload}`;
+    const res = await fetch(url, { redirect: 'follow' });
+    return true;
+  } catch(e) { console.warn("sheetsWrite error:", e); return false; }
 }
 
-// ── Sync all data FROM Google Sheets ───────────────────────────────────────
+// ── تحويل صفوف إلى objects ────────────────────────────────────────────────
+function rowsToObjects(rows) {
+  if (!rows || rows.length < 2) return [];
+  const headers = rows[0];
+  return rows.slice(1)
+    .filter(r => r[0] && String(r[0]).trim() !== '')
+    .map(row => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h] = row[i] !== undefined ? String(row[i]) : ''; });
+      return obj;
+    });
+}
+
+// ── تحميل كل البيانات من Sheets ──────────────────────────────────────────
 async function syncFromSheets() {
-  if (!GAS_URL) return;
   showConnectionStatus('syncing');
   try {
-    const res = await gasGet('getAll');
-    if (!res || res.status !== 'ok') throw new Error('فشل التحميل');
+    // قراءة الثلاث أوراق معاً
+    const [planRows, tlRows, updRows] = await Promise.all([
+      sheetsRead(SH.plans + "!A:F"),
+      sheetsRead(SH.timeline + "!A:E"),
+      sheetsRead(SH.updates + "!A:D"),
+    ]);
 
-    // Plans
-    if (res.plans && res.plans.length > 0) {
-      plans = res.plans.map(p => ({
-        id: parseInt(p.id) || p.id,
+    const plansData    = rowsToObjects(planRows);
+    const timelineData = rowsToObjects(tlRows);
+    const updatesData  = rowsToObjects(updRows);
+
+    if (plansData.length > 0) {
+      plans = plansData.map(p => ({
+        id: isNaN(p.id) ? p.id : parseInt(p.id),
         name: p.name, type: p.type, date: p.date,
         analysis: p.analysis, status: p.status
       }));
       nextId = Math.max(...plans.map(p => parseInt(p.id)||0)) + 1;
     }
-    // Timeline
-    if (res.timeline && res.timeline.length > 0) {
-      tlItems = res.timeline.map(t => ({
-        id: parseInt(t.id) || t.id,
+    if (timelineData.length > 0) {
+      tlItems = timelineData.map(t => ({
+        id: isNaN(t.id) ? t.id : parseInt(t.id),
         date: t.date, title: t.title, desc: t.desc, status: t.status
       }));
       tlNextId = Math.max(...tlItems.map(t => parseInt(t.id)||0)) + 1;
     }
-    // Updates
-    if (res.updates && res.updates.length > 0) {
-      updItems = res.updates.map(u => ({
-        id: parseInt(u.id) || u.id,
+    if (updatesData.length > 0) {
+      updItems = updatesData.map(u => ({
+        id: isNaN(u.id) ? u.id : parseInt(u.id),
         title: u.title, status: u.status, body: u.body
       }));
       updNextId = Math.max(...updItems.map(u => parseInt(u.id)||0)) + 1;
@@ -1022,108 +1041,98 @@ async function syncFromSheets() {
 
     isOnline = true;
     showConnectionStatus('online');
-    // Refresh UI
     renderPlansTable(); renderAdminTable();
     renderTimeline(); renderUpdates();
     renderAdminTl(); renderAdminUpd();
     updateKPIs(); refreshCharts();
-    console.log('✅ تم التزامن من Google Sheets');
+    console.log('✅ تم التزامن من Google Sheets API');
   } catch(e) {
     isOnline = false;
     showConnectionStatus('offline');
-    console.warn('⚠ تعذر التزامن:', e);
+    console.warn('⚠ فشل التزامن:', e);
   }
 }
 
-// ── Save plan to Sheets ─────────────────────────────────────────────────────
-async function sheetSavePlan(plan, isNew=false) {
-  if (!GAS_URL) return;
-  const action = isNew ? 'savePlan' : 'updatePlan';
-  const res = await gasPost({ action, data: plan, username: currentUser?.username });
-  if (res?.status !== 'ok') console.warn('شيتس: فشل حفظ الخطة');
-}
-
-async function sheetDeletePlan(id) {
-  if (!GAS_URL) return;
-  await gasPost({ action: 'deletePlan', id, username: currentUser?.username });
-}
-
+// ── حفظ ورقة الخطط كاملة ────────────────────────────────────────────────
 async function sheetSaveAllPlans() {
-  if (!GAS_URL) return;
-  await gasPost({ action: 'saveAllPlans', data: plans, username: currentUser?.username });
+  const rows = [
+    ["id","name","type","date","analysis","status"],
+    ...plans.map(p => [p.id, p.name, p.type, p.date, p.analysis, p.status])
+  ];
+  await updateSheetData(SH.plans, rows);
+  showSaveIndicator();
 }
 
-// ── Save timeline item to Sheets ────────────────────────────────────────────
-async function sheetSaveTl(item, isNew=false) {
-  if (!GAS_URL) return;
-  const action = isNew ? 'saveTlItem' : 'updateTlItem';
-  await gasPost({ action, data: item, username: currentUser?.username });
+// ── حفظ خطة فردية ───────────────────────────────────────────────────────
+async function sheetSavePlan(plan, isNew) {
+  await sheetSaveAllPlans(); // الأبسط: نحفظ الكل دائماً
+}
+async function sheetDeletePlan(id) {
+  await sheetSaveAllPlans();
 }
 
+// ── حفظ الجدول الزمني كاملاً ─────────────────────────────────────────────
+async function sheetSaveTl(item, isNew) {
+  const rows = [
+    ["id","date","title","desc","status"],
+    ...tlItems.map(t => [t.id, t.date, t.title, t.desc, t.status])
+  ];
+  await updateSheetData(SH.timeline, rows);
+}
 async function sheetDeleteTl(id) {
-  if (!GAS_URL) return;
-  await gasPost({ action: 'deleteTlItem', id, username: currentUser?.username });
+  const rows = [
+    ["id","date","title","desc","status"],
+    ...tlItems.filter(t=>t.id!==id).map(t => [t.id, t.date, t.title, t.desc, t.status])
+  ];
+  await updateSheetData(SH.timeline, rows);
 }
 
-// ── Save update item to Sheets ──────────────────────────────────────────────
-async function sheetSaveUpd(item, isNew=false) {
-  if (!GAS_URL) return;
-  const action = isNew ? 'saveUpdate' : 'updateUpdate';
-  await gasPost({ action, data: item, username: currentUser?.username });
+// ── حفظ التحديثات كاملاً ─────────────────────────────────────────────────
+async function sheetSaveUpd(item, isNew) {
+  const rows = [
+    ["id","title","status","body"],
+    ...updItems.map(u => [u.id, u.title, u.status, u.body])
+  ];
+  await updateSheetData(SH.updates, rows);
 }
-
 async function sheetDeleteUpd(id) {
-  if (!GAS_URL) return;
-  await gasPost({ action: 'deleteUpdate', id, username: currentUser?.username });
+  const rows = [
+    ["id","title","status","body"],
+    ...updItems.filter(u=>u.id!==id).map(u => [u.id, u.title, u.status, u.body])
+  ];
+  await updateSheetData(SH.updates, rows);
 }
 
-// ── Connection status indicator ─────────────────────────────────────────────
+// ── الكتابة الفعلية عبر Apps Script GET (يتجاوز CORS) ────────────────────
+async function updateSheetData(sheetName, rows) {
+  try {
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbw6-n_I20WWp7-nSrQ61ysI-ppQONYoY_mZwrsNF7GWVK0LRXipmYY8ohkrnZdR9Aez/exec";
+    const payload = JSON.stringify({ action:'writeSheet', sheet: sheetName, rows });
+    // إرسال عبر URL param — يتجاوز CORS preflight تماماً
+    const url = `${GAS_URL}?action=writeSheet&sheet=${encodeURIComponent(sheetName)}&rows=${encodeURIComponent(JSON.stringify(rows))}`;
+    await fetch(url, { redirect:'follow', mode:'no-cors' });
+    console.log(`✅ حُفظت ورقة: ${sheetName}`);
+  } catch(e) { console.warn("updateSheetData error:", e); }
+}
+
+// ── حالة الاتصال ─────────────────────────────────────────────────────────
 function showConnectionStatus(state) {
   const el = document.getElementById('conn-status');
   if (!el) return;
-  const states = {
-    online:   { dot:'🟢', text:'متصل بـ Google Sheets', color:'#27ae60' },
-    offline:  { dot:'🔴', text:'غير متصل (وضع محلي)',   color:'#c0392b' },
-    syncing:  { dot:'🔄', text:'جاري التزامن...',       color:'#b8922a' },
-    nourl:    { dot:'⚪', text:'لم يتم ربط Sheets بعد', color:'#8aab91' },
+  const map = {
+    online:  { dot:'🟢', text:'متصل بـ Google Sheets', color:'#27ae60' },
+    offline: { dot:'🔴', text:'تعذر الاتصال',          color:'#c0392b' },
+    syncing: { dot:'🔄', text:'جاري التزامن...',        color:'#b8922a' },
+    nourl:   { dot:'⚪', text:'وضع محلي',               color:'#8aab91' },
   };
-  const s = states[state] || states.nourl;
+  const s = map[state] || map.nourl;
   el.innerHTML = `<span style="color:${s.color};font-weight:600;">${s.dot} ${s.text}</span>`;
 }
 
-// ── Setup GAS URL ───────────────────────────────────────────────────────────
-function openGASSetup() {
-  document.getElementById('gas-setup-modal').classList.add('open');
-  document.getElementById('gas-url-input').value = GAS_URL;
-}
-
-async function saveGASUrl() {
-  const url = document.getElementById('gas-url-input').value.trim();
-  if (!url) { alert('يرجى إدخال رابط الـ Web App'); return; }
-  GAS_URL = url;
-  localStorage.setItem('gas_url', url);
-  console.log('GAS URL updated to:', url);
-  document.getElementById('gas-setup-modal').classList.remove('open');
-  // اختبار الاتصال
-  showConnectionStatus('syncing');
-  const res = await gasGet('ping');
-  if (res?.status === 'ok') {
-    await syncFromSheets();
-  } else {
-    showConnectionStatus('offline');
-    alert('⚠ تعذر الاتصال. تأكد من صحة الرابط وأن الـ Web App منشور بصلاحية "Anyone"');
-  }
-}
-
-function clearGASUrl() {
-  if (!confirm('هل تريد إلغاء ربط Google Sheets؟')) return;
-  GAS_URL = '';
-  localStorage.removeItem('gas_url');
-  isOnline = false;
-  showConnectionStatus('nourl');
-  document.getElementById('gas-setup-modal').classList.remove('open');
-}
-
+// ── إعداد Sheets (placeholder للتوافق مع الكود القديم) ──────────────────
+function openGASSetup() { /* لا حاجة له الآن */ }
+async function saveGASUrl() { await syncFromSheets(); }
+function clearGASUrl() {}
 
 // ══════════════════════════════════════════════════════════
 // DATA
@@ -1281,7 +1290,19 @@ function doLogin() {
     renderAdminUpd();
     // Auto-sync from Google Sheets (URL pre-configured)
     showConnectionStatus('syncing');
-    setTimeout(() => {
+    setTimeout(async () => {
+      // أولاً: اختبر الاتصال بـ Sheets API
+      try {
+        const testUrl = `${SHEETS_BASE}/${SHEETS_ID}/values/${encodeURIComponent('الخطط!A1')}?key=${SHEETS_API_KEY}`;
+        const testRes = await fetch(testUrl);
+        if (testRes.status === 403) {
+          showConnectionStatus('offline');
+          if (document.getElementById('conn-status'))
+            document.getElementById('conn-status').title = 'تأكد أن الـ Sheet مشارك للعموم (Anyone with link → Viewer)';
+          console.warn('⚠ Sheets API 403: Sheet not public');
+          return;
+        }
+      } catch(e) {}
       syncFromSheets();
     }, 400);
   } else {
