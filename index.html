@@ -1320,7 +1320,7 @@ function doLogin() {
     document.getElementById('user-name').textContent = currentUser.name;
     document.getElementById('user-avatar').textContent = currentUser.avatar;
     document.getElementById('user-role-badge').textContent = currentUser.role === 'admin' ? 'أدمن' : 'قراءة';
-    showConnectionStatus(GAS_URL ? 'syncing' : 'nourl');
+    showConnectionStatus(GAS_WRITE_URL ? 'syncing' : 'nourl');
     if (currentUser.role === 'admin') {
       document.getElementById('nav-admin').style.display = '';
       document.getElementById('nav-admin-timeline').style.display = '';
