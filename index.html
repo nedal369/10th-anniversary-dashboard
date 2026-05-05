@@ -563,6 +563,29 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
 .update-body{font-size:12px;color:var(--text-m);line-height:1.7;}
 .update-actions{display:flex;gap:6px;margin-top:10px;}
 
+/* ── Excel Tool ── */
+.add-row-btn.gold{background:var(--gold-bg);border-color:var(--gold-l);color:var(--gold-p);}
+.add-row-btn.gold:hover{background:#f5e9c0;}
+.add-row-btn.blue{background:var(--blue-bg);border-color:var(--blue-a);color:var(--blue-a);}
+.add-row-btn.blue:hover{background:rgba(36,113,163,.15);}
+#xj-drop-zone:hover{background:var(--green-bg);border-color:var(--topbar-bg);}
+#xj-drop-zone.drag-over{background:var(--green-bg);border-color:var(--topbar-bg);transform:scale(1.01);}
+.xj-sheet-tab{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:var(--dark2);color:var(--text-m);transition:all .2s;font-family:Cairo,sans-serif;}
+.xj-sheet-tab.active{background:var(--topbar-bg);color:#fff;border-color:var(--topbar-bg);}
+.xj-sheet-tab:hover:not(.active){background:var(--dark);}
+#xj-preview-table thead th{background:var(--topbar-bg);color:#f0ead8;padding:9px 12px;text-align:right;white-space:nowrap;font-size:11px;position:sticky;top:0;}
+#xj-preview-table tbody tr:nth-child(even){background:var(--dark2);}
+#xj-preview-table tbody tr:hover{background:var(--green-bg);}
+#xj-preview-table td{padding:7px 12px;font-size:11px;color:var(--text-c);border-bottom:1px solid var(--border);}
+.xj-json-key{color:#79c0ff;}
+.xj-json-str{color:#a5d6ff;}
+.xj-json-num{color:#f9826c;}
+.xj-file-card{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--dark2);}
+.xj-file-card .xj-file-info{display:flex;align-items:center;gap:10px;}
+.xj-file-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.xj-status-ok{background:var(--green-bg);color:#1a7a40;border:1px solid rgba(39,174,96,.3);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;}
+.xj-status-err{background:#fdecea;color:#c0392b;border:1px solid rgba(192,57,43,.3);padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;}
+
 </style>
 </head>
 <body>
@@ -630,6 +653,10 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
     </button>
     <button class="nav-btn" id="nav-pages" onclick="showTab('pages',this)" style="display:none;">
       📄 إدارة الصفحات
+      <span class="admin-badge"></span>
+    </button>
+    <button class="nav-btn" id="nav-excel-tool" onclick="showTab('excel-tool',this)" style="display:none;">
+      📊 Excel ← JSON
       <span class="admin-badge"></span>
     </button>
   </div>
@@ -881,6 +908,90 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
       <div class="section-head">📄 إدارة الصفحات والتبويبات <span>— تفعيل / إخفاء الصفحات</span></div>
       <div id="pages-list"></div>
     </div>
+
+  <!-- ── EXCEL TO JSON TAB ── -->
+  <div class="tab-pane" id="tab-excel-tool">
+    <div class="section-head">📊 أداة تحويل Excel إلى JSON <span>— لرفع البيانات إلى GitHub</span></div>
+
+    <!-- Drop Zone -->
+    <div style="background:var(--dark3);border:2px dashed var(--green-l);border-radius:14px;padding:36px 20px;text-align:center;margin-bottom:20px;transition:all .2s;cursor:pointer;" id="xj-drop-zone" onclick="document.getElementById('xj-file-input').click()">
+      <div style="font-size:44px;margin-bottom:10px;">📊</div>
+      <div style="font-size:15px;font-weight:700;color:var(--topbar-bg);margin-bottom:6px;">اسحب ملف Excel هنا أو اضغط للاختيار</div>
+      <div style="font-size:11px;color:var(--text-m);margin-bottom:16px;">يدعم: .xlsx · .xls · .xlsm — سيتم تحويله تلقائياً إلى JSON</div>
+      <input type="file" id="xj-file-input" accept=".xlsx,.xls,.xlsm" style="display:none;" onchange="xjLoadExcel(this)">
+      <button onclick="event.stopPropagation();document.getElementById('xj-file-input').click()" style="background:linear-gradient(135deg,var(--topbar-bg),var(--green-m));color:#fff;border:none;border-radius:10px;padding:13px 32px;font-size:14px;font-weight:700;font-family:Cairo,sans-serif;cursor:pointer;box-shadow:0 4px 14px rgba(30,58,40,.25);">
+        📂 اختر ملف Excel
+      </button>
+      <div id="xj-file-status" style="margin-top:14px;font-size:12px;color:var(--text-m);"></div>
+    </div>
+
+    <!-- Sheet Tabs & Preview -->
+    <div class="card hidden" id="xj-step2" style="margin-bottom:18px;">
+      <div class="card-title">👁 معاينة البيانات</div>
+      <div id="xj-sheet-tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"></div>
+      <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border);max-height:300px;overflow-y:auto;">
+        <table style="width:100%;border-collapse:collapse;" id="xj-preview-table"></table>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;" id="xj-badges"></div>
+    </div>
+
+    <!-- Export Options -->
+    <div class="card hidden" id="xj-step3" style="margin-bottom:18px;">
+      <div class="card-title">⬇ تصدير JSON</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+        <button class="add-row-btn" onclick="xjDownloadAll()" style="background:linear-gradient(135deg,var(--topbar-bg),var(--green-m));color:#fff;border-color:var(--topbar-bg);font-size:13px;padding:10px 22px;">
+          ⬇ تحميل كل الملفات JSON
+        </button>
+        <button class="add-row-btn" onclick="xjDownloadCurrent()">
+          📄 تحميل JSON الورقة الحالية
+        </button>
+        <button class="add-row-btn gold" onclick="xjCopyJSON()">
+          📋 نسخ JSON
+        </button>
+        <button class="add-row-btn blue" onclick="xjLoadIntoApp()" title="تحميل البيانات مباشرة في المنصة">
+          🔄 تحميل في المنصة مباشرة
+        </button>
+      </div>
+
+      <!-- JSON Preview -->
+      <div style="font-size:11px;color:var(--text-m);margin-bottom:6px;">معاينة JSON (أول 3 عناصر):</div>
+      <div id="xj-json-preview" style="background:#0d1117;border-radius:10px;padding:16px;max-height:240px;overflow-y:auto;font-family:monospace;font-size:11px;color:#e6edf3;line-height:1.7;border:1px solid rgba(255,255,255,.08);"></div>
+
+      <div id="xj-export-status" style="margin-top:12px;font-size:12px;"></div>
+    </div>
+
+    <!-- Files Summary -->
+    <div class="card hidden" id="xj-files-summary" style="margin-bottom:18px;">
+      <div class="card-title">📦 ملفات JSON الجاهزة للرفع على GitHub</div>
+      <div id="xj-files-list"></div>
+    </div>
+
+    <!-- GitHub Guide -->
+    <div class="card">
+      <div class="card-title">🐙 دليل رفع JSON إلى GitHub Pages</div>
+      <div style="display:flex;flex-direction:column;gap:0;">
+        <div style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--topbar-bg);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+          <div><div style="font-size:13px;font-weight:700;color:var(--text-c);margin-bottom:3px;">ارفع ملفات JSON إلى مستودع GitHub</div><div style="font-size:12px;color:var(--text-m);line-height:1.7;">في مستودعك: اضغط <strong>Add file → Upload files</strong> وارفع: <code style="background:var(--dark2);padding:1px 6px;border-radius:4px;font-size:11px;">plans.json</code> · <code style="background:var(--dark2);padding:1px 6px;border-radius:4px;font-size:11px;">timeline.json</code> · <code style="background:var(--dark2);padding:1px 6px;border-radius:4px;font-size:11px;">updates.json</code> · <code style="background:var(--dark2);padding:1px 6px;border-radius:4px;font-size:11px;">db.json</code></div></div>
+        </div>
+        <div style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--topbar-bg);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+          <div><div style="font-size:13px;font-weight:700;color:var(--text-c);margin-bottom:3px;">روابط البيانات ستكون</div><div style="font-size:11px;color:var(--text-m);line-height:1.9;font-family:monospace;background:var(--dark2);padding:10px;border-radius:8px;margin-top:6px;">https://raw.githubusercontent.com/<span style="color:var(--green-l);">USERNAME</span>/<span style="color:var(--green-l);">REPO</span>/main/plans.json<br>https://raw.githubusercontent.com/<span style="color:var(--green-l);">USERNAME</span>/<span style="color:var(--green-l);">REPO</span>/main/timeline.json<br>https://raw.githubusercontent.com/<span style="color:var(--green-l);">USERNAME</span>/<span style="color:var(--green-l);">REPO</span>/main/updates.json</div></div>
+        </div>
+        <div style="display:flex;gap:14px;padding:14px 0;">
+          <div style="width:28px;height:28px;border-radius:50%;background:var(--topbar-bg);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text-c);margin-bottom:6px;">ادخل رابط db.json لتحميل البيانات تلقائياً</div>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="xj-github-url" placeholder="https://raw.githubusercontent.com/USER/REPO/main/db.json" style="flex:1;background:var(--dark);border:1.5px solid var(--border);border-radius:8px;padding:9px 14px;font-size:12px;font-family:Cairo,sans-serif;color:var(--text-c);outline:none;direction:ltr;">
+              <button onclick="xjLoadFromGitHub()" style="background:var(--green-m);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-weight:700;font-family:Cairo,sans-serif;cursor:pointer;white-space:nowrap;">🔗 تحميل</button>
+            </div>
+            <div id="xj-github-status" style="font-size:11px;color:var(--text-m);margin-top:6px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   </div><!-- /content -->
 </div><!-- /app -->
@@ -1140,6 +1251,7 @@ function doLogin() {
       document.getElementById('nav-admin').style.display = '';
       document.getElementById('nav-admin-timeline').style.display = '';
       document.getElementById('nav-pages').style.display = '';
+      document.getElementById('nav-excel-tool').style.display = '';
       
     }
     initCharts();
@@ -1177,6 +1289,7 @@ function doLogout() {
   document.getElementById('nav-admin').style.display = 'none';
   document.getElementById('nav-admin-timeline').style.display = 'none';
   document.getElementById('nav-pages').style.display = 'none';
+  document.getElementById('nav-excel-tool').style.display = 'none';
   
   showConnectionStatus('nourl');
   document.querySelector('.nav-btn').classList.add('active');
@@ -1677,6 +1790,361 @@ function exportToExcel() {
   XLSX.utils.book_append_sheet(wb, ws, 'الخطط');
   XLSX.writeFile(wb, 'خطط_الذكرى_العاشرة_' + new Date().toLocaleDateString('ar-SA') + '.xlsx');
 }
+
+
+// ══════════════════════════════════════════════════════════════════════════
+// أداة Excel ← → JSON
+// ══════════════════════════════════════════════════════════════════════════
+(function() {
+  // State
+  let xjWorkbook   = null;
+  let xjSheets     = {};      // {sheetName: [rows]}
+  let xjCurrent    = null;
+  let xjAllJSON    = {};      // {filename: data}
+
+  const FIELD_MAPS = {
+    plans: [
+      { key:'id',       alts:['id','#','رقم','الرقم'] },
+      { key:'name',     alts:['اسم الجهة','name','الجهة','الاسم'] },
+      { key:'type',     alts:['النوع','type','الفئة','نوع'] },
+      { key:'date',     alts:['تاريخ الاستلام','date','التاريخ','تاريخ'] },
+      { key:'analysis', alts:['حالة التحليل','analysis','التحليل'] },
+      { key:'status',   alts:['حالة الاستلام','status','الحالة'] },
+    ],
+    timeline: [
+      { key:'id',     alts:['id','#','رقم'] },
+      { key:'date',   alts:['التاريخ','date','تاريخ'] },
+      { key:'title',  alts:['عنوان الحدث','title','الحدث','العنوان'] },
+      { key:'desc',   alts:['التفاصيل','desc','الوصف','تفاصيل'] },
+      { key:'status', alts:['الحالة','status'] },
+    ],
+    updates: [
+      { key:'id',     alts:['id','#','رقم'] },
+      { key:'title',  alts:['عنوان التحديث','title','العنوان'] },
+      { key:'status', alts:['الحالة','status'] },
+      { key:'body',   alts:['التفاصيل','body','المحتوى','الوصف'] },
+    ],
+  };
+
+  const FILE_META = {
+    'plans.json':    { icon:'📋', color:'#eaf5ee', label:'خطط تواصلية' },
+    'timeline.json': { icon:'📅', color:'#fdf6e3', label:'جدول زمني' },
+    'updates.json':  { icon:'📢', color:'#ebf5fb', label:'تحديثات جارية' },
+    'db.json':       { icon:'🗄', color:'#f2f5f1', label:'قاعدة البيانات الكاملة' },
+  };
+
+  // ── Load Excel ────────────────────────────────────────────────────────
+  window.xjLoadExcel = function(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const st = document.getElementById('xj-file-status');
+    st.textContent = '⏳ جاري قراءة الملف...';
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        xjWorkbook = XLSX.read(e.target.result, { type:'binary', cellDates:true });
+        xjSheets   = {};
+        xjAllJSON  = {};
+
+        xjWorkbook.SheetNames.forEach(name => {
+          const ws   = xjWorkbook.Sheets[name];
+          const data = XLSX.utils.sheet_to_json(ws, { defval:'' });
+          if (data.length > 0) xjSheets[name] = data;
+        });
+
+        if (!Object.keys(xjSheets).length) {
+          st.innerHTML = '<span style="color:#c0392b;">❌ الملف فارغ أو لا يحتوي على بيانات</span>';
+          return;
+        }
+
+        st.innerHTML = `<span style="color:#1a7a40;font-weight:600;">✅ تم تحميل: <strong>${file.name}</strong> — ${Object.keys(xjSheets).length} أوراق، إجمالي ${Object.values(xjSheets).reduce((s,d)=>s+d.length,0)} صف</span>`;
+
+        buildXjTabs();
+        document.getElementById('xj-step2').classList.remove('hidden');
+        document.getElementById('xj-step3').classList.remove('hidden');
+
+        const firstName = Object.keys(xjSheets)[0];
+        xjSelectSheet(firstName);
+        xjProcessAll();
+
+      } catch(err) {
+        st.innerHTML = `<span style="color:#c0392b;">❌ خطأ: ${err.message}</span>`;
+      }
+    };
+    reader.readAsBinaryString(file);
+  };
+
+  // ── Sheet Tabs ────────────────────────────────────────────────────────
+  function buildXjTabs() {
+    const tabs = document.getElementById('xj-sheet-tabs');
+    tabs.innerHTML = '';
+    Object.keys(xjSheets).forEach(name => {
+      const b = document.createElement('button');
+      b.className   = 'xj-sheet-tab';
+      b.textContent = `${name} (${xjSheets[name].length})`;
+      b.id          = 'xj-tab-' + name;
+      b.onclick     = () => xjSelectSheet(name);
+      tabs.appendChild(b);
+    });
+  }
+
+  function xjSelectSheet(name) {
+    xjCurrent = name;
+    document.querySelectorAll('.xj-sheet-tab').forEach(b => b.classList.remove('active'));
+    const t = document.getElementById('xj-tab-' + name);
+    if (t) t.classList.add('active');
+    xjRenderTable(xjSheets[name]);
+
+    const badges = document.getElementById('xj-badges');
+    const type   = xjDetectType(name, xjSheets[name]);
+    badges.innerHTML = `
+      <span style="background:var(--green-bg);color:#1a7a40;border:1px solid rgba(39,174,96,.3);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${xjSheets[name].length} صف</span>
+      <span style="background:var(--gold-bg);color:var(--gold-p);border:1px solid rgba(184,146,42,.3);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${Object.keys(xjSheets[name][0]||{}).length} عمود</span>
+      <span style="background:var(--blue-bg);color:#1a5276;border:1px solid rgba(36,113,163,.25);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;">${type==='plans'?'📋 خطط':type==='timeline'?'📅 جدول زمني':type==='updates'?'📢 تحديثات':'📄 بيانات'}</span>
+    `;
+    xjPreviewJSON(name);
+  }
+
+  // ── Table ─────────────────────────────────────────────────────────────
+  function xjRenderTable(data) {
+    if (!data || !data.length) return;
+    const headers = Object.keys(data[0]);
+    const preview = data.slice(0, 8);
+    let h = '<thead><tr><th>#</th>';
+    headers.forEach(hh => { h += `<th>${hh}</th>`; });
+    h += '</tr></thead><tbody>';
+    preview.forEach((row, i) => {
+      h += `<tr><td style="color:var(--text-s);text-align:center;">${i+1}</td>`;
+      headers.forEach(hh => {
+        const v = String(row[hh]||'');
+        h += `<td title="${v}">${v.length>28 ? v.slice(0,28)+'…' : v}</td>`;
+      });
+      h += '</tr>';
+    });
+    if (data.length > 8) h += `<tr><td colspan="${headers.length+1}" style="text-align:center;padding:8px;color:var(--text-s);font-size:11px;">… و ${data.length-8} صف آخر</td></tr>`;
+    h += '</tbody>';
+    document.getElementById('xj-preview-table').innerHTML = h;
+  }
+
+  // ── Detect Type ───────────────────────────────────────────────────────
+  function xjDetectType(name, data) {
+    const n = name.toLowerCase();
+    const cols = Object.keys(data[0]||{}).map(c=>c.toLowerCase()).join(' ');
+    if (n.includes('خطط') || n.includes('plan') || cols.includes('جهة') || cols.includes('استلام')) return 'plans';
+    if (n.includes('زمني') || n.includes('timeline') || cols.includes('حدث') || cols.includes('title')) return 'timeline';
+    if (n.includes('تحديث') || n.includes('update')) return 'updates';
+    return 'custom';
+  }
+
+  // ── Map Row ───────────────────────────────────────────────────────────
+  function xjMapRow(row, fields, headers, idx) {
+    const obj = {};
+    fields.forEach(field => {
+      const matched = headers.find(h =>
+        field.alts.some(a => h.toLowerCase().includes(a.toLowerCase()) || a.toLowerCase().includes(h.toLowerCase()))
+      );
+      if (matched) obj[field.key] = String(row[matched]||'').trim() || '—';
+    });
+    if (!obj.id) obj.id = idx + 1;
+    return obj;
+  }
+
+  // ── Process All ───────────────────────────────────────────────────────
+  function xjProcessAll() {
+    xjAllJSON = {};
+    Object.entries(xjSheets).forEach(([name, data]) => {
+      const type    = xjDetectType(name, data);
+      const fields  = FIELD_MAPS[type];
+      const headers = Object.keys(data[0]||{});
+      let result;
+      if (fields) {
+        result = data.map((row, i) => xjMapRow(row, fields, headers, i))
+          .filter(obj => Object.entries(obj).some(([k,v]) => k!=='id' && v && v!=='—'));
+      } else {
+        result = data;
+      }
+      const fnMap = { plans:'plans.json', timeline:'timeline.json', updates:'updates.json' };
+      const fn = fnMap[type] || (name.replace(/[^\w\u0600-\u06FF]/g,'_') + '.json');
+      xjAllJSON[fn] = result;
+    });
+
+    // db.json combined
+    const db = { lastUpdated: new Date().toISOString(), version:'1.0' };
+    Object.entries(xjAllJSON).forEach(([fn, d]) => { db[fn.replace('.json','')] = d; });
+    xjAllJSON['db.json'] = db;
+
+    xjRenderFilesList();
+    document.getElementById('xj-files-summary').classList.remove('hidden');
+  }
+
+  // ── Preview JSON ──────────────────────────────────────────────────────
+  function xjPreviewJSON(sheetName) {
+    const type   = xjDetectType(sheetName, xjSheets[sheetName]);
+    const fn     = { plans:'plans.json', timeline:'timeline.json', updates:'updates.json' }[type] || 'data.json';
+    const data   = xjAllJSON[fn] || xjSheets[sheetName].slice(0,3);
+    const preview= Array.isArray(data) ? data.slice(0,3) : data;
+    const raw    = JSON.stringify(preview, null, 2);
+    const more   = Array.isArray(data) && data.length>3 ? `\n  // … و ${data.length-3} عنصر` : '';
+    document.getElementById('xj-json-preview').innerHTML = xjHighlight(raw.slice(0,-1) + more + (more?'\n]':']'));
+  }
+
+  function xjHighlight(json) {
+    return json.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, m => {
+        let cls = 'xj-json-num';
+        if (/^"/.test(m)) cls = /:$/.test(m) ? 'xj-json-key' : 'xj-json-str';
+        return `<span class="${cls}">${m}</span>`;
+      });
+  }
+
+  // ── Files List ────────────────────────────────────────────────────────
+  function xjRenderFilesList() {
+    const list = document.getElementById('xj-files-list');
+    list.innerHTML = Object.entries(xjAllJSON).map(([fn, data]) => {
+      const meta = FILE_META[fn] || { icon:'📄', color:'#f2f5f1', label:'بيانات' };
+      const count= Array.isArray(data) ? data.length + ' عنصر' : 'موحّد';
+      return `<div class="xj-file-card">
+        <div class="xj-file-info">
+          <div class="xj-file-icon" style="background:${meta.color};">${meta.icon}</div>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text-c);">${fn}</div>
+            <div style="font-size:11px;color:var(--text-m);">${meta.label} — ${count}</div>
+          </div>
+        </div>
+        <button class="add-row-btn" onclick="xjTriggerDownload('${fn}', JSON.stringify(xjGetData('${fn}'), null, 2))" style="font-size:11px;padding:6px 14px;">⬇ تحميل</button>
+      </div>`;
+    }).join('');
+  }
+
+  window.xjGetData = fn => xjAllJSON[fn];
+
+  // ── Download ──────────────────────────────────────────────────────────
+  window.xjTriggerDownload = function(filename, content) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([content], { type:'application/json;charset=utf-8' }));
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+  };
+
+  window.xjDownloadAll = function() {
+    const keys = Object.keys(xjAllJSON);
+    keys.forEach((fn, i) => {
+      setTimeout(() => xjTriggerDownload(fn, JSON.stringify(xjAllJSON[fn], null, 2)), i * 350);
+    });
+    setTimeout(() => {
+      const st = document.getElementById('xj-export-status');
+      st.innerHTML = `<div class="xj-status-ok">✅ تم تحميل ${keys.length} ملفات JSON — ارفعها إلى GitHub</div>`;
+    }, keys.length * 350 + 100);
+  };
+
+  window.xjDownloadCurrent = function() {
+    if (!xjCurrent) return;
+    const type = xjDetectType(xjCurrent, xjSheets[xjCurrent]);
+    const fn   = { plans:'plans.json', timeline:'timeline.json', updates:'updates.json' }[type] || (xjCurrent+'.json');
+    const data = xjAllJSON[fn] || xjSheets[xjCurrent];
+    xjTriggerDownload(fn, JSON.stringify(data, null, 2));
+    document.getElementById('xj-export-status').innerHTML = `<div class="xj-status-ok">✅ تم تحميل ${fn}</div>`;
+  };
+
+  window.xjCopyJSON = function() {
+    if (!xjCurrent) return;
+    const type = xjDetectType(xjCurrent, xjSheets[xjCurrent]);
+    const fn   = { plans:'plans.json', timeline:'timeline.json', updates:'updates.json' }[type] || 'data.json';
+    navigator.clipboard.writeText(JSON.stringify(xjAllJSON[fn]||xjSheets[xjCurrent], null, 2))
+      .then(() => { document.getElementById('xj-export-status').innerHTML = '<div class="xj-status-ok">✅ تم النسخ إلى الحافظة</div>'; })
+      .catch(() => { document.getElementById('xj-export-status').innerHTML = '<div class="xj-status-err">❌ فشل النسخ</div>'; });
+  };
+
+  // ── Load into App directly ────────────────────────────────────────────
+  window.xjLoadIntoApp = function() {
+    let loaded = 0;
+    if (xjAllJSON['plans.json'] && Array.isArray(xjAllJSON['plans.json'])) {
+      plans  = xjAllJSON['plans.json'];
+      nextId = Math.max(...plans.map(p=>parseInt(p.id)||0)) + 1;
+      loaded++;
+    }
+    if (xjAllJSON['timeline.json'] && Array.isArray(xjAllJSON['timeline.json'])) {
+      tlItems  = xjAllJSON['timeline.json'];
+      tlNextId = Math.max(...tlItems.map(t=>parseInt(t.id)||0)) + 1;
+      loaded++;
+    }
+    if (xjAllJSON['updates.json'] && Array.isArray(xjAllJSON['updates.json'])) {
+      updItems  = xjAllJSON['updates.json'];
+      updNextId = Math.max(...updItems.map(u=>parseInt(u.id)||0)) + 1;
+      loaded++;
+    }
+    if (loaded === 0) {
+      document.getElementById('xj-export-status').innerHTML = '<div class="xj-status-err">❌ لم يتم التعرف على البيانات</div>';
+      return;
+    }
+    saveToLocal();
+    renderPlansTable(); renderAdminTable();
+    renderTimeline();   renderUpdates();
+    renderAdminTl();    renderAdminUpd();
+    updateKPIs();       refreshCharts();
+    document.getElementById('xj-export-status').innerHTML = `<div class="xj-status-ok">✅ تم تحميل البيانات في المنصة (${loaded} قسم) — وحُفظت محلياً</div>`;
+  };
+
+  // ── Load from GitHub ──────────────────────────────────────────────────
+  window.xjLoadFromGitHub = async function() {
+    const url = document.getElementById('xj-github-url').value.trim();
+    const st  = document.getElementById('xj-github-status');
+    if (!url) { st.textContent = '⚠ أدخل رابطاً صحيحاً'; return; }
+    st.textContent = '⏳ جاري التحميل...';
+    try {
+      const res  = await fetch(url + '?t=' + Date.now());
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+
+      let loaded = 0;
+      // Support db.json structure or direct array
+      const plansData    = data.plans    || (Array.isArray(data) ? data : null);
+      const timelineData = data.timeline || null;
+      const updatesData  = data.updates  || null;
+
+      if (plansData)    { plans    = plansData;    nextId   = Math.max(...plans.map(p=>parseInt(p.id)||0))   +1; loaded++; }
+      if (timelineData) { tlItems  = timelineData; tlNextId = Math.max(...tlItems.map(t=>parseInt(t.id)||0)) +1; loaded++; }
+      if (updatesData)  { updItems = updatesData;  updNextId= Math.max(...updItems.map(u=>parseInt(u.id)||0))+1; loaded++; }
+
+      if (loaded === 0) { st.innerHTML = '<span style="color:#c0392b;">❌ تنسيق الملف غير متوافق</span>'; return; }
+
+      saveToLocal();
+      renderPlansTable(); renderAdminTable();
+      renderTimeline();   renderUpdates();
+      renderAdminTl();    renderAdminUpd();
+      updateKPIs();       refreshCharts();
+
+      const updated = data.lastUpdated ? ' | آخر تحديث: ' + new Date(data.lastUpdated).toLocaleDateString('ar-SA') : '';
+      st.innerHTML = `<span style="color:#1a7a40;font-weight:600;">✅ تم التحميل من GitHub (${loaded} قسم)${updated}</span>`;
+    } catch(e) {
+      st.innerHTML = `<span style="color:#c0392b;">❌ فشل التحميل: ${e.message} — تأكد أن الرابط صحيح والملف عام</span>`;
+    }
+  };
+
+  // ── Drag & Drop ───────────────────────────────────────────────────────
+  const dz = document.getElementById('xj-drop-zone');
+  if (dz) {
+    dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('drag-over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      dz.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        const inp = document.getElementById('xj-file-input');
+        const dt  = new DataTransfer();
+        dt.items.add(file);
+        inp.files = dt.files;
+        xjLoadExcel(inp);
+      }
+    });
+  }
+
+})(); // end IIFE
 
 </script>
 
