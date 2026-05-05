@@ -950,27 +950,40 @@ td{padding:10px 14px;font-size:12px;color:var(--text-c);text-align:right;}
 // إعدادات ربط Google Sheets
 // ضع رابط الـ Web App هنا بعد نشره
 // ════════════════════════════════════════════════════════════════════════════
-let GAS_URL = localStorage.getItem('gas_url') || 'https://script.google.com/macros/s/AKfycbw9ZnM4WXjBw7OuHBK8OUvghu43KjjzAbDHCXJWmSqQpllrNlX-3ceERxkzNuN2ok20/exec';
+let GAS_URL = localStorage.getItem('gas_url') || 'https://script.google.com/a/pure-consulting.com/macros/s/AKfycbxJMBkfBMuTR4H6D-88r7RdczU5-Y3Fl4XmzmfKZY75LDbljJ4/exec';
 let isOnline = false;  // هل المنصة متصلة بـ Google Sheets؟
 
 // ── API Helper ──────────────────────────────────────────────────────────────
 async function gasGet(action) {
   if (!GAS_URL) return null;
   try {
-    const res = await fetch(`${GAS_URL}?action=${action}`, { method:'GET' });
-    return await res.json();
+    const url = `${GAS_URL}?action=${action}&t=${Date.now()}`;
+    const res = await fetch(url, {
+      method: 'GET',
+      redirect: 'follow',
+    });
+    const text = await res.text();
+    return JSON.parse(text);
   } catch(e) { console.warn('GAS GET error:', e); return null; }
 }
 
 async function gasPost(body) {
   if (!GAS_URL) return null;
   try {
+    // Send as form-urlencoded to avoid CORS preflight on Workspace domains
+    const formData = new FormData();
+    formData.append('payload', JSON.stringify(body));
     const res = await fetch(GAS_URL, {
       method: 'POST',
-      body: JSON.stringify(body),
+      redirect: 'follow',
+      body: formData,
     });
-    return await res.json();
-  } catch(e) { console.warn('GAS POST error:', e); return null; }
+    const text = await res.text();
+    return JSON.parse(text);
+  } catch(e) {
+    console.warn('GAS POST error:', e);
+    return null;
+  }
 }
 
 // ── Sync all data FROM Google Sheets ───────────────────────────────────────
